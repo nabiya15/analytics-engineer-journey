@@ -19,4 +19,4 @@ tracking my transition into analytics engineering.
 
 ## Stack
 
-SQL · Python · pandas . dbt · BigQuery · Git
+SQL · Python · pandas · dbt · BigQuery · Git
