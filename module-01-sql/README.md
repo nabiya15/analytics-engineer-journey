@@ -3,12 +3,11 @@
 ![](https://img.shields.io/badge/Analytics_Engineer_Journey-Module_01-2455C3?style=flat-square)&nbsp;
 ![](https://img.shields.io/badge/Topic-SQL_Fundamentals-586074?style=flat-square)&nbsp;
 ![](https://img.shields.io/badge/Lessons_Complete-2_of_4-0C7550?style=flat-square)&nbsp;
-![](https://img.shields.io/badge/Module_Status-In_Progress-E8A020?style=flat-square)
+![](https://img.shields.io/badge/Status-In_Progress-E8A020?style=flat-square)
 
 # Module 01 — SQL Fundamentals
 
-**The language every data system speaks.**
-Learn to ask questions, filter answers, summarise data, and connect tables.
+*The language every data system speaks. Ask questions, filter answers, summarise data, connect tables.*
 
 </div>
 
@@ -18,9 +17,7 @@ Learn to ask questions, filter answers, summarise data, and connect tables.
 
 - [Module overview](#overview)
 - [Lesson 01 — SQL Basics](#lesson-01)
-  - [The data](#l01-data) · [What is a database](#l01-01) · [SELECT & FROM](#l01-02) · [WHERE](#l01-03) · [AND, OR, !=](#l01-04) · [Aggregations](#l01-05) · [HAVING](#l01-06) · [ORDER BY & LIMIT](#l01-07) · [NULL](#l01-08) · [Self-check](#l01-quiz)
 - [Lesson 02 — JOINs](#lesson-02)
-  - [The tools](#l02-tools) · [The scenario](#l02-scenario) · [Why JOINs](#l02-01) · [Keys](#l02-02) · [INNER JOIN](#l02-03) · [LEFT JOIN](#l02-04) · [RIGHT JOIN](#l02-05) · [FULL OUTER JOIN](#l02-06) · [NULL pattern](#l02-07) · [Self-check](#l02-quiz)
 - [Quick reference](#quick-reference)
 
 ---
@@ -29,24 +26,20 @@ Learn to ask questions, filter answers, summarise data, and connect tables.
 
 ## Module overview
 
-<details>
-<summary><strong>Lesson progress & files</strong></summary>
-<br>
+| # | Lesson | Skills | Status |
+|---|--------|--------|--------|
+| 01 | SQL Basics | SELECT · WHERE · GROUP BY · ORDER BY | ✅ Complete |
+| 02 | JOINs | INNER · LEFT · RIGHT · FULL OUTER | ✅ Complete |
+| 03 | Subqueries & CASE | Nested queries · conditional logic | ⬜ Upcoming |
+| 04 | Window functions & CTEs | ROW_NUMBER · LAG · LEAD · WITH | ⬜ Upcoming |
 
-| # | Lesson | Status | SQL file |
-|---|--------|--------|----------|
-| 01 | SQL Basics | ✅ Complete | [`lesson-01-basics.sql`](lesson-01-basics.sql) |
-| 02 | JOINs | ✅ Complete | [`lesson-02-joins.sql`](lesson-02-joins.sql) |
-| 03 | Subqueries & CASE statements | ⬜ Upcoming | — |
-| 04 | Window functions & CTEs | ⬜ Upcoming | — |
+**Files in this module**
 
-**Practice files**
-
-| File | What it covers |
-|------|---------------|
-| [`practice-les-02-joins.sql`](practice-les-02-joins.sql) | Cold JOIN exercises — no hints, Copilot off |
-
-</details>
+| File | Purpose |
+|------|---------|
+| [`lesson-01-basics.sql`](lesson-01-basics.sql) | All queries from Lesson 01 — commented |
+| [`lesson-02-joins.sql`](lesson-02-joins.sql) | All queries from Lesson 02 — commented |
+| [`practice-les-02-joins.sql`](practice-les-02-joins.sql) | JOIN practice — no hints, Copilot off |
 
 ---
 
@@ -64,12 +57,7 @@ Learn to ask questions, filter answers, summarise data, and connect tables.
 
 <br>
 
-<a id="l01-data"></a>
-<details>
-<summary><strong>📋 The data — tickets table</strong></summary>
-<br>
-
-A single table: a support ticket system. One row = one ticket.
+**The data** — one table, seven tickets.
 
 | ticket_id | type | priority | status | assigned_to | resolution_hours |
 |-----------|------|----------|--------|-------------|-----------------|
@@ -81,165 +69,107 @@ A single table: a support ticket system. One row = one ticket.
 | INC004 | Incident | Medium | Open | Dev Team | `NULL` |
 | REQ003 | Request | High | Closed | Nabiya | 6 |
 
-> 💡 `NULL` in `resolution_hours` means the ticket is still open — no resolution time exists yet. `NULL` is not zero. It means **no value exists at all**.
+> `NULL` in `resolution_hours` = ticket still open, no resolution time recorded yet. `NULL` is not zero — it is the complete absence of a value.
+
+---
+
+### 01 · What is a database?
+
+> 💬 *A structured way to store information so you can ask questions about it later.*
+
+A **table** is like a spreadsheet tab. A **row** is one record. A **column** is one fact about that record. SQL is the language you use to ask questions about the table.
+
+---
+
+### 02 · SELECT & FROM
+
+> 💬 *"Show me these columns from this table."*
+
+```sql
+SELECT *                                  -- all columns
+FROM tickets;
+
+SELECT ticket_id, priority, status        -- specific columns only
+FROM tickets;
+```
+
+<details>
+<summary>Why column names have no quotes but values do</summary>
+<br>
+
+`status` is a **column name** — part of the table's structure. `'Open'` is a **value** — actual data inside a cell. SQL needs quotes around values to distinguish them from column references. This distinction appears in every query you will ever write.
 
 </details>
 
 ---
 
-<a id="l01-01"></a>
-<details>
-<summary><strong>01 &nbsp;·&nbsp; What is a database?</strong></summary>
-<br>
+### 03 · WHERE
 
-Forget the technical definition. You already understand this from real life.
-
-Think of a database like a filing cabinet. Each drawer is a **table**. Each sheet of paper inside is a **row** — one record about one thing. Each column on that sheet is one fact about that thing.
-
-The table above is a database table. Every row is one ticket. Every column is one fact about it.
-
-**SQL is the language you use to ask questions about what's inside the filing cabinet.** You do not open every drawer yourself. You write a question in SQL and the database finds the answer.
-
-<br>
-
-- [ ] &nbsp;Got it
-
-</details>
-
-<a id="l01-02"></a>
-<details>
-<summary><strong>02 &nbsp;·&nbsp; SELECT & FROM — choosing what to show</strong></summary>
-<br>
-
-> 💬 **Plain English:** "Show me *these columns* from *this table*."
+> 💬 *"Only show me rows where this condition is true."*
 
 ```sql
--- Show everything in the table
-SELECT *
-FROM tickets;
-
--- Show only specific columns
-SELECT ticket_id, priority, status
-FROM tickets;
-```
-
-`SELECT *` means *"give me all columns."* Use it when exploring. In real work, always name the specific columns — pulling unnecessary data is wasteful at scale.
-
-<br>
-
-- [ ] &nbsp;Got it
-
-</details>
-
-<a id="l01-03"></a>
-<details>
-<summary><strong>03 &nbsp;·&nbsp; WHERE — filtering rows</strong></summary>
-<br>
-
-> 💬 **Plain English:** "Only show me rows where *this condition* is true."
-
-```sql
--- Only open tickets
-SELECT *
-FROM tickets
+SELECT * FROM tickets
 WHERE status = 'Open';
 
--- Only tickets assigned to Nabiya
-SELECT *
-FROM tickets
+SELECT * FROM tickets
 WHERE assigned_to = 'Nabiya';
 ```
 
-**Why does `'Open'` have quotes but `status` does not?**
-
-`status` is the **column name** — part of the table structure. `'Open'` is a **value** — actual data inside a cell. SQL needs quotes around values so it knows you're searching for that exact text, not looking for another column called `Open`. Structure vs value — this distinction appears in every query you will ever write.
-
-<br>
-
-- [ ] &nbsp;Got it
-
-</details>
-
-<a id="l01-04"></a>
 <details>
-<summary><strong>04 &nbsp;·&nbsp; AND, OR, != — combining conditions</strong></summary>
+<summary>Combining conditions — AND · OR · !=</summary>
 <br>
 
-> 💬 **Plain English:** `AND` = both conditions must be true. `OR` = at least one must be true. `!=` = not equal to.
+`AND` = both conditions must be true. `OR` = at least one. `!=` = not equal.
 
 ```sql
--- High priority AND still open
-SELECT *
-FROM tickets
-WHERE priority = 'High'
-AND status = 'Open';
+SELECT * FROM tickets
+WHERE priority = 'High' AND status = 'Open';
 
--- Assigned to Nabiya OR Dev Team
-SELECT *
-FROM tickets
-WHERE assigned_to = 'Nabiya'
-OR assigned_to = 'Dev Team';
+SELECT * FROM tickets
+WHERE assigned_to = 'Nabiya' OR assigned_to = 'Dev Team';
 
--- Everything except closed tickets
-SELECT *
-FROM tickets
+SELECT * FROM tickets
 WHERE status != 'Closed';
 ```
 
-> ⚠️ `WHERE status != 'Closed'` and `WHERE status = 'Open'` return the same rows here — because status only has two values. Add a third value like `'Pending'` and they behave differently. Always check what values actually exist in a column before assuming equivalence.
-
-<br>
-
-- [ ] &nbsp;Got it
+> ⚠️ `WHERE status != 'Closed'` and `WHERE status = 'Open'` return the same rows here because only two values exist. Add `'Pending'` and they diverge. Always check what values are actually in a column.
 
 </details>
 
-<a id="l01-05"></a>
-<details>
-<summary><strong>05 &nbsp;·&nbsp; COUNT, AVG, GROUP BY — summarising data</strong></summary>
-<br>
+---
 
-> 💬 **Plain English:** Instead of showing individual rows, calculate *something about* the rows — how many, what average, what total.
+### 04 · GROUP BY & aggregations
+
+> 💬 *"Instead of showing individual rows, calculate something about them."*
 
 ```sql
--- How many tickets exist in total?
-SELECT COUNT(*)
-FROM tickets;
-
--- How many tickets per status?
-SELECT status, COUNT(*)
+SELECT status, COUNT(*)            -- how many tickets per status?
 FROM tickets
 GROUP BY status;
 
--- How many open tickets per priority?
-SELECT priority, COUNT(*)
+SELECT priority, AVG(resolution_hours)  -- average resolution per priority?
 FROM tickets
-WHERE status = 'Open'
+WHERE status = 'Closed'
 GROUP BY priority;
-
--- Average resolution time for closed tickets
-SELECT AVG(resolution_hours)
-FROM tickets
-WHERE status = 'Closed';
 ```
 
-**Execution order:** `WHERE` runs first and filters rows. `GROUP BY` then buckets the surviving rows. This means `WHERE` cannot filter on a grouped result — that is what `HAVING` is for.
-
+<details>
+<summary>COUNT(*) vs COUNT(column) — and why it matters</summary>
 <br>
 
-- [ ] &nbsp;Got it
+`COUNT(*)` counts all rows including those with `NULL`. `COUNT(resolution_hours)` counts only rows where a value exists. When NULLs should count as zero, use `COUNT(column)`.
+
+**Execution order:** `WHERE` filters rows first, then `GROUP BY` buckets the survivors. This means `WHERE` cannot filter on a grouped result — that needs `HAVING`.
 
 </details>
 
-<a id="l01-06"></a>
-<details>
-<summary><strong>06 &nbsp;·&nbsp; HAVING — filtering after grouping</strong></summary>
-<br>
+---
 
-> 💬 **Plain English:** "`WHERE` filters rows before grouping. `HAVING` filters groups after grouping."
+### 05 · HAVING
+
+> 💬 *"`WHERE` filters rows before grouping. `HAVING` filters groups after."*
 
 ```sql
--- Priority groups where average resolution time is over 5 hours
 SELECT priority, AVG(resolution_hours)
 FROM tickets
 WHERE status = 'Closed'
@@ -247,30 +177,21 @@ GROUP BY priority
 HAVING AVG(resolution_hours) > 5;
 ```
 
-**The pipeline:** `WHERE` → `GROUP BY` → `HAVING`
-
-Filter the rows, bucket them into groups, then filter the groups.
-
+<details>
+<summary>The pipeline: WHERE → GROUP BY → HAVING</summary>
 <br>
 
-- [ ] &nbsp;Got it
+Think of it as a conveyor belt. `WHERE` removes the rows you do not want. `GROUP BY` buckets the remaining rows. `HAVING` removes the buckets that do not meet your condition. Each step only sees what the previous step passed through.
 
 </details>
 
-<a id="l01-07"></a>
-<details>
-<summary><strong>07 &nbsp;·&nbsp; ORDER BY & LIMIT — sorting and capping</strong></summary>
-<br>
+---
 
-> 💬 **Plain English:** `ORDER BY` sorts your results. `LIMIT` caps how many rows come back.
+### 06 · ORDER BY & LIMIT
+
+> 💬 *"`ORDER BY` sorts results. `LIMIT` caps how many rows come back."*
 
 ```sql
--- All tickets sorted by resolution time, longest first
-SELECT ticket_id, priority, resolution_hours
-FROM tickets
-ORDER BY resolution_hours DESC;
-
--- Top 2 fastest resolved closed tickets
 SELECT ticket_id, priority, resolution_hours
 FROM tickets
 WHERE status = 'Closed'
@@ -278,76 +199,87 @@ ORDER BY resolution_hours ASC
 LIMIT 2;
 ```
 
-`ASC` = smallest to largest. `DESC` = largest to smallest.
-
-> ⚠️ **The text-sort trap:** Sorting `priority` alphabetically gives `High → Low → Medium` — not a meaningful urgency order. Add `'Critical'` and it sorts before `High` because `C` comes before `H`. Your query silently returns wrong results with no error. Fix this with `CASE` — covered in Lesson 03.
-
-<br>
-
-- [ ] &nbsp;Got it
-
-</details>
-
-<a id="l01-08"></a>
 <details>
-<summary><strong>08 &nbsp;·&nbsp; NULL — the missing value</strong></summary>
+<summary>The text-sort trap — why alphabetical priority is dangerous</summary>
 <br>
 
-> 💬 **Plain English:** `NULL` means "this value does not exist." Not zero. Not empty. The complete absence of a value.
+`ORDER BY priority ASC` gives `High → Low → Medium` — alphabetical, not urgency order. Add `'Critical'` and it silently sorts before `'High'` because `C` comes before `H`. Your query returns the wrong row with no error.
+
+Fix: use `CASE` to assign numbers before sorting. Covered in Lesson 03.
 
 ```sql
--- Find tickets with no resolution time recorded
-SELECT ticket_id, status, resolution_hours
-FROM tickets
-WHERE resolution_hours IS NULL;
+-- Wrong: alphabetical
+ORDER BY priority ASC;
+
+-- Right: meaningful order (Lesson 03)
+ORDER BY CASE priority
+    WHEN 'Critical' THEN 1
+    WHEN 'High'     THEN 2
+    WHEN 'Medium'   THEN 3
+    WHEN 'Low'      THEN 4
+END;
 ```
-
-**Never write `WHERE resolution_hours = NULL`.** That always returns zero rows. `NULL` cannot be compared with `=` — it has no value to compare. Always use `IS NULL` or `IS NOT NULL`.
-
-**`COUNT(*)` vs `COUNT(column)`:** `COUNT(*)` counts all rows including NULLs. `COUNT(resolution_hours)` counts only non-NULL values. Use `COUNT(column)` when NULLs should count as zero.
-
-<br>
-
-- [ ] &nbsp;Got it
 
 </details>
 
 ---
 
-<a id="l01-quiz"></a>
+### 07 · NULL
+
+> 💬 *"`NULL` is not zero. It is not empty. It is the absence of any value."*
+
+```sql
+SELECT * FROM tickets
+WHERE resolution_hours IS NULL;    -- open tickets with no resolution time
+```
+
+<details>
+<summary>Why = NULL never works, and how NULL behaves in COUNT and ORDER BY</summary>
+<br>
+
+`WHERE resolution_hours = NULL` always returns zero rows. `NULL` has no value — nothing can be equal to the absence of a value, not even another `NULL`. Always use `IS NULL` or `IS NOT NULL`.
+
+**In ORDER BY:** `NULL` values have no numeric position. They float to unpredictable positions depending on the database. Never assume where they land.
+
+**In COUNT:** `COUNT(*)` includes rows with `NULL`. `COUNT(resolution_hours)` ignores them. Use whichever matches your intent.
+
+</details>
+
+---
+
 <details>
 <summary><strong>🧠 Lesson 01 — Self-check</strong></summary>
 <br>
 
 <details>
-<summary>Q1 &nbsp;·&nbsp; What is the difference between WHERE and HAVING?</summary>
+<summary>Q1 · What is the difference between WHERE and HAVING?</summary>
 <br>
 
-`WHERE` filters individual rows **before** they are grouped. `HAVING` filters groups **after** `GROUP BY` has run. You cannot use `WHERE` to filter on an aggregated value like `COUNT(*)` or `AVG()`.
+`WHERE` filters individual rows before grouping. `HAVING` filters groups after `GROUP BY` has run. You cannot use `WHERE` to filter on `COUNT(*)` or `AVG()`.
 
 </details>
 
 <details>
-<summary>Q2 &nbsp;·&nbsp; Why does <code>WHERE resolution_hours = NULL</code> return zero rows?</summary>
+<summary>Q2 · Why does <code>WHERE resolution_hours = NULL</code> return nothing?</summary>
 <br>
 
-`NULL` means no value exists — and nothing can be equal to the absence of a value. You must use `IS NULL` or `IS NOT NULL` to check for missing values.
+`NULL` means no value exists. Nothing can be equal to the absence of a value. Use `IS NULL` instead.
 
 </details>
 
 <details>
-<summary>Q3 &nbsp;·&nbsp; You want to count how many tickets each person is assigned. Write it in words.</summary>
+<summary>Q3 · Count how many tickets each person is assigned — write it in words.</summary>
 <br>
 
-`SELECT assigned_to, COUNT(*) FROM tickets GROUP BY assigned_to` — select the person's name and a count of rows, grouped by name so the count applies per person.
+`SELECT assigned_to, COUNT(*) FROM tickets GROUP BY assigned_to` — group by person, count the rows in each group.
 
 </details>
 
 <details>
-<summary>Q4 &nbsp;·&nbsp; What is wrong with sorting priority alphabetically?</summary>
+<summary>Q4 · What breaks when you sort text-based priority alphabetically?</summary>
 <br>
 
-Alphabetical order gives `High → Low → Medium` — not a meaningful urgency ranking. Adding a `'Critical'` level breaks it further: `C` sorts before `H`, so the query silently returns the wrong "highest priority" row. Text categories that represent order should never be sorted alphabetically.
+`High → Low → Medium` is not urgency order. Adding `'Critical'` makes it worse — `C` before `H` means Critical sorts lower than it should. Text categories representing order must use `CASE` to get numeric values before sorting.
 
 </details>
 
@@ -369,48 +301,11 @@ Alphabetical order gives `High → Low → Medium` — not a meaningful urgency 
 
 <br>
 
-<a id="l02-tools"></a>
-<details>
-<summary><strong>🔧 The tools — what these tables represent</strong></summary>
-<br>
+**The scenario** — At Meridian Systems, `autosys_jobs` ⏰ tracks automated task runs. `servicenow_tickets` 🎫 tracks reported problems. Both tables share `job_id` — that column is the bridge.
 
-<table>
-<tr>
-<td width="50%" valign="top">
+> 🔑 Think of `job_id` like a student ID. If both the attendance sheet and the report card use the same ID, a teacher can look up any student across both — even though the sheets were made separately.
 
-**⏰ `autosys_jobs` — The Robot Alarm Clock**
-
-At Meridian Systems, hundreds of tasks run automatically every night — sorting numbers, moving files, generating reports. Autosys schedules and runs these tasks. It records whether each task finished properly or failed.
-
-Our `autosys_jobs` table is that task list.
-
-</td>
-<td width="50%" valign="top">
-
-**🎫 `servicenow_tickets` — The Help-Desk Notebook**
-
-When something breaks, the support team creates a ticket: *"this thing broke, here is how urgent it is, someone is working on it."*
-
-Think of a sticky-note board at a repair shop — every problem gets a note, every note tracks who is fixing it.
-
-Our `servicenow_tickets` table is that board.
-
-</td>
-</tr>
-</table>
-
-</details>
-
-<a id="l02-scenario"></a>
-<details>
-<summary><strong>📋 The scenario — two tables, one connection</strong></summary>
-<br>
-
-Both tables were built by different teams but share one column: **`job_id`**.
-
-> 🔑 Think of `job_id` like a student ID number. If both the attendance sheet and the report card use the same ID, a teacher can look up any student across both sheets — even though they were made separately. That shared ID is the **key** that connects the two tables.
-
-### ⏰ `autosys_jobs`
+**`autosys_jobs`**
 
 | job_id | job_name | status |
 |--------|----------|--------|
@@ -420,7 +315,7 @@ Both tables were built by different teams but share one column: **`job_id`**.
 | `JOB004` | Data_Cleanup | ❌ Failed |
 | `JOB005` | User_Tracking | ✅ Success |
 
-### 🎫 `servicenow_tickets`
+**`servicenow_tickets`**
 
 | ticket_id | job_id | priority | assigned_to |
 |-----------|--------|----------|-------------|
@@ -430,58 +325,35 @@ Both tables were built by different teams but share one column: **`job_id`**.
 | INC004 | `JOB003` | 🟢 Low | Nabiya |
 | INC005 | `JOB002` | 🟢 Low | Dev Team |
 
-> 👀 **Two things to notice before writing a single JOIN:**
-> - **JOB001 appears twice** in tickets (INC001 + INC003) — one job, two tickets raised for it
-> - **JOB005 has no ticket** — it ran successfully, nobody complained
->
-> These two facts drive every JOIN result below.
+> 👀 **Notice before you write a single JOIN:** JOB001 appears twice in tickets (INC001 + INC003). JOB005 has no ticket. These two facts explain every result below.
+
+---
+
+### 01 · Why JOINs exist
+
+> 💬 *"A JOIN temporarily combines two tables into one result using a shared column."*
+
+<details>
+<summary>The long version — and the key concept</summary>
+<br>
+
+Imagine both tables as physical notebooks. To answer *"which tickets belong to which failed job?"* you'd flip between notebooks and match job IDs by hand. A JOIN does that automatically.
+
+**Primary key:** The unique ID that belongs to a table. `job_id` in `autosys_jobs` — every job has exactly one, none share it.
+
+**Foreign key:** That same ID appearing in a second table as a reference. `job_id` in `servicenow_tickets` points back to `autosys_jobs`. It is the bridge.
+
+**The ON condition:** `ON aj.job_id = sn.job_id` — find rows where these values match and merge them into one output row.
+
+The four JOIN types differ in only one thing: **what happens when a match doesn't exist on one side?**
 
 </details>
 
 ---
 
-<a id="l02-01"></a>
-<details>
-<summary><strong>01 &nbsp;·&nbsp; Why JOINs exist</strong></summary>
-<br>
+### 02 · INNER JOIN
 
-Imagine both tables as physical notebooks on your desk. To answer *"which tickets belong to which failed job?"* you'd flip between notebooks, match up job IDs by hand, and write the combined information yourself. Painful with 5 rows. Impossible with 5 million.
-
-A JOIN is SQL's way of doing that combination automatically. You tell it: *"look at these two tables, find rows where `job_id` matches, and stitch those rows into one result."*
-
-The four JOIN types differ in only one thing: **what happens when a match doesn't exist on one side?**
-
-<br>
-
-- [ ] &nbsp;Got it
-
-</details>
-
-<a id="l02-02"></a>
-<details>
-<summary><strong>02 &nbsp;·&nbsp; Primary key vs foreign key</strong></summary>
-<br>
-
-| Term | What it means |
-|------|--------------|
-| **Primary key** | The unique ID that belongs to a table. In `autosys_jobs`, that is `job_id` — every job has exactly one, none share it. Like a passport number. |
-| **Foreign key** | That same ID appearing in a second table as a reference. In `servicenow_tickets`, `job_id` points back to `autosys_jobs`. It is the bridge. |
-| **ON condition** | `ON aj.job_id = sn.job_id` — SQL finds rows where these values match and merges them into one output row. |
-
-The `autosys_jobs` table *owns* `job_id`. Every table that references a job borrows that ID. The JOIN reunites them.
-
-<br>
-
-- [ ] &nbsp;Got it
-
-</details>
-
-<a id="l02-03"></a>
-<details>
-<summary><strong>03 &nbsp;·&nbsp; INNER JOIN</strong></summary>
-<br>
-
-> 💬 **Plain English:** "Only show me rows that exist in **both** tables at the same time."
+> 💬 *"Only show me rows that exist in **both** tables."*
 
 ![INNER JOIN](assets/venn-inner.svg)
 
@@ -493,24 +365,21 @@ INNER JOIN servicenow_tickets AS sn
     ON aj.job_id = sn.job_id;
 ```
 
-| Result | Why |
-|--------|-----|
-| JOB005 disappears | No matching ticket — INNER JOIN drops it |
-| JOB001 appears twice | Matched two tickets (INC001 and INC003) |
-| **5 rows total** | |
-
+<details>
+<summary>Result from our data · 5 rows</summary>
 <br>
 
-- [ ] &nbsp;Got it
+- **JOB005 disappears** — no matching ticket, INNER JOIN drops it entirely
+- **JOB001 appears twice** — matched two tickets (INC001 and INC003)
+- This is a **one-to-many relationship**: one job, many tickets, many output rows
 
 </details>
 
-<a id="l02-04"></a>
-<details>
-<summary><strong>04 &nbsp;·&nbsp; LEFT JOIN &nbsp; — &nbsp; most used</strong></summary>
-<br>
+---
 
-> 💬 **Plain English:** "Show me every row from the left table. Add ticket info where it exists. Write `NULL` where it doesn't."
+### 03 · LEFT JOIN — most used
+
+> 💬 *"Show me every row from the left table. Fill in ticket info where it exists. `NULL` where it doesn't."*
 
 ![LEFT JOIN](assets/venn-left.svg)
 
@@ -522,43 +391,37 @@ LEFT JOIN servicenow_tickets AS sn
     ON aj.job_id = sn.job_id;
 ```
 
-| Result | Why |
-|--------|-----|
-| JOB005 stays | Appears with `NULL` in ticket columns |
-| JOB001 still appears twice | Still matched two tickets |
-| **6 rows total** | |
-
-> ✅ When in doubt, start with LEFT JOIN. It is the most commonly written JOIN in real analytics work.
-
+<details>
+<summary>Result from our data · 6 rows</summary>
 <br>
 
-- [ ] &nbsp;Got it
+- **JOB005 stays** — appears with `NULL` in the ticket columns
+- **JOB001 still appears twice** — one-to-many still applies
+- When in doubt, start with LEFT JOIN. It is the most commonly written JOIN in real analytics work.
 
 </details>
 
-<a id="l02-05"></a>
-<details>
-<summary><strong>05 &nbsp;·&nbsp; RIGHT JOIN &nbsp; — &nbsp; rarely written</strong></summary>
-<br>
+---
 
-> 💬 **Plain English:** "Show me every row from the right table. Add job info where it exists. Write `NULL` where it doesn't."
+### 04 · RIGHT JOIN — rarely written
+
+> 💬 *"Show me every row from the right table. Fill in job info where it exists. `NULL` where it doesn't."*
 
 ![RIGHT JOIN](assets/venn-right.svg)
 
-Every RIGHT JOIN can be rewritten as a LEFT JOIN by swapping which table comes first. Most analysts always write LEFT JOIN and flip the table order instead. Know it exists — you will almost never write it.
-
+<details>
+<summary>Why you will almost never write this</summary>
 <br>
 
-- [ ] &nbsp;Got it
+Every RIGHT JOIN can be rewritten as a LEFT JOIN by swapping which table comes first. Most analysts always write LEFT JOIN and flip the table positions instead. Know it exists — but use LEFT JOIN in practice.
 
 </details>
 
-<a id="l02-06"></a>
-<details>
-<summary><strong>06 &nbsp;·&nbsp; FULL OUTER JOIN</strong></summary>
-<br>
+---
 
-> 💬 **Plain English:** "Show me absolutely everything from both tables. Fill in `NULL` wherever there is no match on either side."
+### 05 · FULL OUTER JOIN
+
+> 💬 *"Show me absolutely everything from both tables. `NULL` wherever there is no match on either side."*
 
 ![FULL OUTER JOIN](assets/venn-full.svg)
 
@@ -570,30 +433,24 @@ FULL OUTER JOIN servicenow_tickets AS sn
     ON aj.job_id = sn.job_id;
 ```
 
-| Result | Why |
-|--------|-----|
-| JOB005 appears | With `NULL` on the ticket side |
-| All 5 tickets appear | All have matching jobs |
-| JOB001 still appears twice | One-to-many relationship |
-| **6 rows total** | |
-
+<details>
+<summary>Result from our data · 6 rows</summary>
 <br>
 
-- [ ] &nbsp;Got it
+- **JOB005** appears with `NULL` on the ticket side
+- All 5 tickets appear — each has a matching job so no NULLs on the left
+- **JOB001** still appears twice
+- Use this when you need to audit both sides for gaps simultaneously
 
 </details>
 
-<a id="l02-07"></a>
-<details>
-<summary><strong>07 &nbsp;·&nbsp; The NULL pattern — finding what's missing</strong></summary>
-<br>
+---
 
-> 🎯 **Pattern:** `LEFT JOIN` + `WHERE right_key IS NULL` = find rows in the left table with nothing matching on the right
+### 06 · The NULL pattern — finding what's missing
 
-Think of a teacher with an attendance sheet and a homework pile. LEFT JOIN combines them. `WHERE submission IS NULL` finds exactly which students did not hand anything in.
+> 💬 *"LEFT JOIN + `WHERE right_key IS NULL` = find left rows with no match on the right."*
 
 ```sql
--- Which jobs ran with no ticket ever raised?
 SELECT aj.job_id, aj.job_name, aj.status
 FROM autosys_jobs AS aj
 LEFT JOIN servicenow_tickets AS sn
@@ -601,63 +458,65 @@ LEFT JOIN servicenow_tickets AS sn
 WHERE sn.ticket_id IS NULL;
 ```
 
-Returns only **JOB005**. The LEFT JOIN kept it with `NULL`s. The `WHERE` isolates only those unmatched rows.
-
-**You will use this constantly:**
-customers who never ordered · employees with no review · students who did not submit · failed jobs with no ticket raised
-
-The pattern is always identical — LEFT JOIN, then `WHERE right_key IS NULL`.
-
+<details>
+<summary>How it works + real-world uses</summary>
 <br>
 
-- [ ] &nbsp;Got it
+The LEFT JOIN keeps JOB005 in the result with `NULL`s on the ticket side. The `WHERE sn.ticket_id IS NULL` then isolates only those unmatched rows.
+
+**You will use this constantly:**
+- Customers who never placed an order
+- Employees with no performance review on file
+- Failed jobs with no incident ticket raised
+- Students who didn't submit their homework
+
+The pattern is always the same — LEFT JOIN, then `WHERE right_key IS NULL`.
 
 </details>
 
 ---
 
-<a id="l02-quiz"></a>
 <details>
 <summary><strong>🧠 Lesson 02 — Self-check</strong></summary>
 <br>
 
 <details>
-<summary>Q1 &nbsp;·&nbsp; You want every job including those with no ticket. Which JOIN?</summary>
+<summary>Q1 · You want every job including those with no ticket. Which JOIN?</summary>
 <br>
 
-**LEFT JOIN.** The left table is guaranteed to appear fully. Jobs with no matching ticket show `NULL` in the ticket columns instead of being dropped.
+**LEFT JOIN.** The left table appears fully. Jobs with no matching ticket show `NULL` in the ticket columns instead of being dropped.
 
 </details>
 
 <details>
-<summary>Q2 &nbsp;·&nbsp; INNER JOIN returns 5 rows. LEFT JOIN on the same tables returns 7. What do the extra 2 rows mean?</summary>
+<summary>Q2 · INNER JOIN returns 5 rows. LEFT JOIN returns 7. What do the extra 2 mean?</summary>
 <br>
 
-There are **2 rows in the left table with no match in the right.** INNER JOIN dropped them silently. LEFT JOIN kept them and filled the right-side columns with `NULL`.
+There are 2 rows in the left table with no match in the right. INNER JOIN dropped them. LEFT JOIN kept them with `NULL`s on the right side.
 
 </details>
 
 <details>
-<summary>Q3 &nbsp;·&nbsp; Why does JOB001 appear twice even though it only exists once in autosys_jobs?</summary>
+<summary>Q3 · Why does JOB001 appear twice even though it only exists once in autosys_jobs?</summary>
 <br>
 
-JOB001 matched **two rows** in `servicenow_tickets` — INC001 and INC003. A JOIN creates one output row per match. One job × two tickets = two output rows. This is called a **one-to-many relationship**.
+JOB001 matched two rows in `servicenow_tickets` — INC001 and INC003. A JOIN creates one output row per match. One job × two tickets = two output rows. This is a one-to-many relationship.
 
 </details>
 
 <details>
-<summary>Q4 &nbsp;·&nbsp; Describe the pattern for finding jobs that never had a ticket raised.</summary>
+<summary>Q4 · Describe the pattern for finding jobs with no ticket ever raised.</summary>
 <br>
 
-`LEFT JOIN servicenow_tickets ON job_id`, then `WHERE sn.ticket_id IS NULL`. The LEFT JOIN keeps all jobs including those with no ticket. `IS NULL` isolates only the unmatched ones.
+`LEFT JOIN servicenow_tickets ON job_id`, then `WHERE sn.ticket_id IS NULL`. LEFT JOIN keeps all jobs. `IS NULL` isolates only the unmatched ones.
 
 </details>
 
 <details>
-<summary>Q5 &nbsp;·&nbsp; You have a RIGHT JOIN. How do you rewrite it as a LEFT JOIN?</summary>
+<summary>Q5 · You have a RIGHT JOIN. How do you rewrite it as a LEFT JOIN?</summary>
 <br>
 
-Swap the table positions — move the right table into `FROM`, move the left table into `JOIN`, change `RIGHT JOIN` to `LEFT JOIN`. The result is identical. This is why most analysts always write LEFT JOIN.
+Swap the table positions — move the right table into `FROM`, the left table into `JOIN`, change `RIGHT` to `LEFT`. The result is identical.
 
 </details>
 
@@ -669,47 +528,35 @@ Swap the table positions — move the right table into `FROM`, move the left tab
 
 ## Quick reference
 
-<details>
-<summary><strong>Core SQL clauses — execution order</strong></summary>
-<br>
+### Core clause order
 
-| Clause | What it does | Runs |
-|--------|-------------|------|
-| `FROM` | Specify the table | 1st |
-| `WHERE` | Filter rows before grouping | 2nd |
-| `GROUP BY` | Bucket rows into groups | 3rd |
-| `HAVING` | Filter groups after grouping | 4th |
-| `SELECT` | Choose which columns to show | 5th |
-| `ORDER BY` | Sort the final result | 6th |
-| `LIMIT` | Cap the number of rows returned | Last |
+| Order | Clause | Does what |
+|-------|--------|-----------|
+| 1 | `FROM` | Specify the table |
+| 2 | `WHERE` | Filter rows before grouping |
+| 3 | `GROUP BY` | Bucket rows into groups |
+| 4 | `HAVING` | Filter groups after grouping |
+| 5 | `SELECT` | Choose which columns to show |
+| 6 | `ORDER BY` | Sort the final result |
+| 7 | `LIMIT` | Cap the number of rows returned |
 
-</details>
+### JOIN types
 
-<details>
-<summary><strong>JOIN types at a glance</strong></summary>
-<br>
-
-| | Type | What it returns | NULLs on |
+| | Type | Returns | NULLs on |
 |---|---|---|---|
 | 🔵 | `INNER JOIN` | Only rows matching in both tables | Neither |
-| 🟢 | `LEFT JOIN` | All left rows + matching right rows | Right side |
-| 🟡 | `RIGHT JOIN` | All right rows + matching left rows | Left side |
-| 🟣 | `FULL OUTER JOIN` | Every row from both tables | Either side |
+| 🟢 | `LEFT JOIN` | All left + matching right | Right side |
+| 🟡 | `RIGHT JOIN` | All right + matching left | Left side |
+| 🟣 | `FULL OUTER JOIN` | Everything from both tables | Either side |
 
-</details>
+### Common traps
 
-<details>
-<summary><strong>Common traps</strong></summary>
-<br>
-
-| Trap | Why it happens | Fix |
-|------|---------------|-----|
-| `WHERE x = NULL` returns nothing | `NULL` cannot be compared with `=` | Use `IS NULL` |
-| Alphabetical sort breaks priority order | `High → Low → Medium` is not urgency | Use `CASE` to assign numbers |
-| JOIN returns more rows than expected | One-to-many relationships duplicate rows | Check for duplicate keys first |
-| `COUNT(*)` counts NULLs | `COUNT(*)` counts rows, not values | Use `COUNT(column)` to ignore NULLs |
-
-</details>
+| Trap | Fix |
+|------|-----|
+| `WHERE x = NULL` returns nothing | Use `IS NULL` |
+| Alphabetical sort breaks priority order | Use `CASE` to assign numeric values |
+| JOIN returns more rows than expected | Check for one-to-many relationships |
+| `COUNT(*)` counts NULL rows | Use `COUNT(column)` to exclude NULLs |
 
 ---
 
