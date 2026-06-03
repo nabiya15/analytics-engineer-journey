@@ -1,0 +1,1 @@
+SELECT 'DuckDB is working inside .AEenv' AS status;
