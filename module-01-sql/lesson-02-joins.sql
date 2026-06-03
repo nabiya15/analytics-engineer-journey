@@ -128,3 +128,4 @@ FROM autosys_jobs AS aj
 LEFT JOIN servicenow_tickets AS sn
     ON aj.job_id = sn.job_id
 GROUP BY aj.job_id, aj.job_name;
+

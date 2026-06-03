@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 02 — SQL JOINs · Analytics Engineer Journey</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F5F2EE;
+  --card:#FFFFFF;
+  --text:#18192A;
+  --muted:#586074;
+  --hint:#9AA3B2;
+  --border:#E3DED8;
+  --border-md:#C9C3BB;
+  --blue:#2455C3;
+  --blue-bg:#EDF2FD;
+  --blue-mid:#C2D1F5;
+  --green:#0C7550;
+  --green-bg:#E8F5F0;
+  --amber:#9A5800;
+  --amber-bg:#FEF3E0;
+  --code-bg:#1B1F2E;
+  --code-text:#CDD6F4;
+  --surface:#F8F5F1;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:5rem}
+
+/* ── HEADER ── */
+.header{background:var(--card);border-bottom:0.5px solid var(--border);padding:2rem 2rem 1.75rem}
+.header-inner{max-width:720px;margin:0 auto}
+.header-accent{width:36px;height:3px;background:linear-gradient(90deg,#2455C3,#7C5CEB);border-radius:2px;margin-bottom:1.25rem}
+.header-crumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--hint);margin-bottom:.75rem;letter-spacing:.04em}
+.header-crumb span{color:var(--blue)}
+.header-title{font-family:'Syne',sans-serif;font-size:30px;font-weight:600;letter-spacing:-.02em;color:var(--text);margin-bottom:.5rem;line-height:1.15}
+.header-title em{font-style:normal;color:var(--blue)}
+.header-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem}
+.pill{font-size:11px;font-weight:500;padding:3px 11px;border-radius:20px;border:0.5px solid var(--border);color:var(--muted)}
+.pill.done{background:var(--green-bg);color:var(--green);border-color:transparent}
+.header-sub{font-size:13px;color:var(--muted);line-height:1.7;max-width:500px}
+.progress-row{display:flex;align-items:center;gap:12px;margin-top:1.25rem}
+.progress-track{flex:1;height:3px;background:var(--border);border-radius:2px}
+.progress-fill{height:3px;background:var(--blue);border-radius:2px;transition:width .4s;width:0%}
+.progress-txt{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--hint);white-space:nowrap}
+
+/* ── WRAP ── */
+.wrap{max-width:720px;margin:0 auto;padding:1.75rem 1.25rem}
+
+/* ── TOOL EXPLAINER ── */
+.tools-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem}
+.tool-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:1rem 1.1rem}
+.tool-emoji{font-size:22px;margin-bottom:.5rem}
+.tool-name{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:400;color:var(--blue);margin-bottom:.35rem}
+.tool-tagline{font-size:13px;font-weight:500;color:var(--text);margin-bottom:.4rem;line-height:1.4}
+.tool-desc{font-size:12px;color:var(--muted);line-height:1.7}
+
+/* ── STORY BLOCK ── */
+.story{background:var(--card);border:0.5px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1.25rem}
+.story-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--hint);margin-bottom:.6rem}
+.story h2{font-family:'Syne',sans-serif;font-size:16px;font-weight:600;margin-bottom:.6rem}
+.story p{font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:1.1rem}
+.story p:last-child{margin-bottom:0}
+.tables-row{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:center;margin-top:1rem}
+.tbl-wrap{border:0.5px solid var(--border);border-radius:10px;overflow:hidden;font-size:12px}
+.tbl-label{font-family:'JetBrains Mono',monospace;font-size:10px;padding:7px 11px;background:var(--code-bg);color:rgba(255,255,255,0.6);letter-spacing:.05em}
+.tbl table{width:100%;border-collapse:collapse}
+.tbl th{background:var(--surface);font-size:10px;font-weight:500;color:var(--hint);padding:5px 10px;text-align:left;border-bottom:0.5px solid var(--border)}
+.tbl td{padding:5px 10px;border-bottom:0.5px solid var(--border);font-size:11.5px;color:var(--text)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td.key,.tbl th.key{background:var(--blue-bg);color:var(--blue);font-weight:500}
+.tbl td.fail{color:#B52A2A;font-weight:500}
+.tbl td.ok{color:var(--green)}
+.tbl td.run{color:var(--amber)}
+.connector{display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 10px}
+.conn-line{width:1.5px;height:50px;background:linear-gradient(to bottom,transparent,var(--blue),transparent)}
+.conn-tag{font-size:10px;font-weight:500;color:var(--blue);background:var(--blue-bg);border:0.5px solid var(--blue-mid);border-radius:4px;padding:2px 6px;font-family:'JetBrains Mono',monospace;white-space:nowrap}
+.callout{background:var(--surface);border:0.5px solid var(--border);border-radius:8px;padding:.65rem .9rem;font-size:12px;color:var(--muted);line-height:1.6;margin-top:1rem}
+.callout strong{color:var(--text);font-weight:500}
+
+/* ── SECTIONS ── */
+.section{border:0.5px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;background:var(--card)}
+.section-head{display:flex;align-items:center;gap:11px;padding:.9rem 1.2rem;cursor:pointer;user-select:none;transition:background .12s}
+.section-head:hover{background:var(--surface)}
+.snum{width:28px;height:28px;border-radius:7px;background:var(--surface);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--hint);flex-shrink:0}
+.snum.done{background:var(--green-bg);border-color:#86EFAC;color:var(--green)}
+.stitle{flex:1;font-size:14px;font-weight:500;font-family:'Syne',sans-serif}
+.badge{display:inline-block;font-size:10px;font-weight:500;padding:2px 7px;border-radius:4px;margin-left:7px;vertical-align:middle}
+.b-blue{background:var(--blue-bg);color:var(--blue)}
+.b-amber{background:var(--amber-bg);color:var(--amber)}
+.check-wrap{font-size:11px;color:var(--hint);display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}
+.check-wrap input{width:13px;height:13px;accent-color:var(--green);cursor:pointer}
+.chev{color:var(--hint);font-size:13px;transition:transform .2s;flex-shrink:0}
+.chev.open{transform:rotate(180deg)}
+.sbody{padding:1.2rem 1.4rem;border-top:0.5px solid var(--border);display:none}
+.sbody.open{display:block}
+
+/* ── CONTENT INSIDE SECTIONS ── */
+.plain{background:var(--blue-bg);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:.6rem 1rem;font-size:13px;font-weight:500;color:var(--blue);margin-bottom:1.1rem;line-height:1.5}
+.sbody p{font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:.9rem}
+.sbody p:last-child{margin-bottom:0}
+
+/* ── VENN ── */
+.venn-wrap{margin:.9rem 0 1rem;display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.venn-cap{font-size:11px;color:var(--hint);font-family:'JetBrains Mono',monospace;line-height:1.5}
+
+/* ── CODE ── */
+.code-wrap{position:relative;margin:.9rem 0}
+.code-block{background:var(--code-bg);border-radius:9px;padding:1rem 1.2rem;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.8;overflow-x:auto;white-space:pre;color:var(--code-text)}
+.copy-btn{position:absolute;top:9px;right:9px;background:rgba(255,255,255,0.07);border:0.5px solid rgba(255,255,255,0.14);border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer;color:rgba(255,255,255,0.5);font-family:'Inter',sans-serif}
+.copy-btn:hover{background:rgba(255,255,255,0.11)}
+.copy-btn.copied{color:#6EE7B7;border-color:#6EE7B7}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--blue-bg);border:0.5px solid var(--blue-mid);color:var(--blue);padding:1px 5px;border-radius:4px}
+
+/* ── KV ── */
+.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:13px;margin-bottom:1rem;background:var(--surface);padding:.85rem 1rem;border-radius:8px;border:0.5px solid var(--border)}
+.kv dt{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--hint);white-space:nowrap;padding-top:2px}
+.kv dd{color:var(--muted);line-height:1.6}
+
+/* ── QUIZ ── */
+.section-gap{margin-top:2rem}
+.block-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:600;margin-bottom:.85rem}
+.q-card{border:0.5px solid var(--border);border-radius:11px;margin-bottom:9px;overflow:hidden;background:var(--card)}
+.q-head{padding:.85rem 1.1rem;font-size:13px;font-weight:500;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;line-height:1.6}
+.q-right{display:flex;align-items:center;gap:7px;flex-shrink:0;margin-top:1px}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--blue)}
+.rev-btn{background:transparent;border:0.5px solid var(--border-md);border-radius:5px;padding:4px 11px;font-size:11px;cursor:pointer;color:var(--muted);font-family:'Inter',sans-serif}
+.rev-btn:hover{background:var(--surface)}
+.answer{padding:.85rem 1.1rem;border-top:0.5px solid var(--border);background:var(--green-bg);font-size:13px;color:var(--text);line-height:1.75;display:none}
+.answer.show{display:block}
+
+/* ── REFERENCE ── */
+.ref-table{border:0.5px solid var(--border);border-radius:12px;overflow:hidden;background:var(--card);font-size:13px}
+.ref-row{display:grid;grid-template-columns:140px 1fr 110px;padding:.65rem 1.1rem;border-bottom:0.5px solid var(--border);align-items:center;gap:10px}
+.ref-row:last-child{border-bottom:none}
+.ref-row.head{background:var(--surface);font-size:10px;font-weight:500;color:var(--hint);text-transform:uppercase;letter-spacing:.06em}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:7px;vertical-align:middle}
+.footer{margin-top:2.5rem;padding-top:1.25rem;border-top:0.5px solid var(--border);font-size:11px;color:var(--hint);display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace}
+</style>
+</head>
+<body>
+
+<!-- ══════════ HEADER ══════════ -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-accent"></div>
+    <div class="header-crumb">module-01-sql / <span>lesson-02-joins.html</span></div>
+    <div class="header-title">SQL <em>JOINs</em></div>
+    <div class="header-pills">
+      <span class="pill">Module 01 · SQL Fundamentals</span>
+      <span class="pill">Lesson 02 of 04</span>
+      <span class="pill">~45 min</span>
+      <span class="pill done">✓ complete</span>
+    </div>
+    <p class="header-sub">How to combine two tables into one result using a shared column. Built from our real practice scenario at Meridian Systems.</p>
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" id="prog"></div></div>
+      <span class="progress-txt" id="prog-label">0 / 7 sections</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ══════════ TOOL EXPLAINERS ══════════ -->
+<div class="tools-row">
+  <div class="tool-card">
+    <div class="tool-emoji">⏰</div>
+    <div class="tool-name">autosys_jobs</div>
+    <div class="tool-tagline">The robot alarm clock</div>
+    <div class="tool-desc">At Meridian Systems, hundreds of computer tasks run automatically every night — sorting numbers, moving files, generating reports. Autosys is the system that schedules and runs these tasks. It keeps a list of every task (called a "job") and writes down whether it finished successfully or broke. Our <code>autosys_jobs</code> table is that list.</div>
+  </div>
+  <div class="tool-card">
+    <div class="tool-emoji">🎫</div>
+    <div class="tool-name">servicenow_tickets</div>
+    <div class="tool-tagline">The help-desk notebook</div>
+    <div class="tool-desc">When something breaks at Meridian Systems, the support team creates a "ticket" — a note that says what broke, how urgent it is, and who is working on it. ServiceNow is the system that stores all these tickets. Our <code>servicenow_tickets</code> table is that notebook of problems and who is fixing them.</div>
+  </div>
+</div>
+
+<!-- ══════════ STORY ══════════ -->
+<div class="story">
+  <div class="story-label">The scenario</div>
+  <h2>Two notebooks, one connection</h2>
+  <p>Autosys keeps a list of every job that ran. ServiceNow keeps a list of every ticket raised when something went wrong. These two lists live in separate systems — but both care about the same jobs. When a job fails in Autosys, a ticket is raised in ServiceNow with the same <code>job_id</code>. That shared column is how we connect them.</p>
+  <p>Think of <code>job_id</code> like a student's ID number. If both the attendance sheet and the report card use the same student ID, a teacher can look up a student across both sheets — even though the sheets were made separately.</p>
+
+  <div class="tables-row">
+    <div class="tbl-wrap tbl">
+      <div class="tbl-label">⏰ autosys_jobs — the alarm clock list</div>
+      <table>
+        <thead><tr><th class="key">job_id</th><th>job_name</th><th>status</th></tr></thead>
+        <tbody>
+          <tr><td class="key">JOB001</td><td>Daily_Sales_ETL</td><td class="fail">Failed</td></tr>
+          <tr><td class="key">JOB002</td><td>Weekly_Report</td><td class="ok">Success</td></tr>
+          <tr><td class="key">JOB003</td><td>Monthly_Backup</td><td class="run">Running</td></tr>
+          <tr><td class="key">JOB004</td><td>Data_Cleanup</td><td class="fail">Failed</td></tr>
+          <tr><td class="key">JOB005</td><td>User_Tracking</td><td class="ok">Success</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="connector">
+      <div class="conn-line"></div>
+      <div class="conn-tag">job_id</div>
+      <div class="conn-line"></div>
+    </div>
+    <div class="tbl-wrap tbl">
+      <div class="tbl-label">🎫 servicenow_tickets — the help-desk notebook</div>
+      <table>
+        <thead><tr><th>ticket</th><th class="key">job_id</th><th>priority</th></tr></thead>
+        <tbody>
+          <tr><td>INC001</td><td class="key">JOB001</td><td class="fail">High</td></tr>
+          <tr><td>INC002</td><td class="key">JOB004</td><td class="fail">High</td></tr>
+          <tr><td>INC003</td><td class="key">JOB001</td><td class="run">Medium</td></tr>
+          <tr><td>INC004</td><td class="key">JOB003</td><td class="ok">Low</td></tr>
+          <tr><td>INC005</td><td class="key">JOB002</td><td class="ok">Low</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="callout">
+    👀 <strong>Two things to notice before we write a single JOIN:</strong>
+    JOB001 appears twice in the tickets table (INC001 and INC003) — one job had two separate tickets raised for it.
+    JOB005 is in the jobs list but has no ticket at all — it ran successfully so nobody raised a complaint.
+    These two facts will explain every JOIN result below.
+  </div>
+</div>
+
+<!-- ══════════ SECTION 1 ══════════ -->
+<div class="section" id="s1">
+  <div class="section-head" onclick="tog('s1')">
+    <div class="snum" id="n1">01</div>
+    <span class="stitle">Why JOINs exist</span>
+    <label class="check-wrap" onclick="event.stopPropagation()"><input type="checkbox" onchange="mark('s1',this)" id="c1"> got it</label>
+    <span class="chev" id="ch1">▾</span>
+  </div>
+  <div class="sbody" id="b1">
+    <p>Imagine two physical notebooks on your desk. If you want to answer "which tickets belong to which failed job?" — you'd have to flip between notebooks, match up the job IDs, and write down the combined information yourself. That's painful with 5 rows. It's impossible with 5 million.</p>
+    <p>A JOIN is SQL's way of doing that combination automatically. You tell it: <em>"look at these two tables, find rows where the job_id matches, and stitch those rows together into one result."</em></p>
+    <p>The four types of JOIN only differ in one question: <strong>what do we do when a match doesn't exist on one side?</strong> Each type answers that differently.</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 2 ══════════ -->
+<div class="section" id="s2">
+  <div class="section-head" onclick="tog('s2')">
+    <div class="snum" id="n2">02</div>
+    <span class="stitle">Primary key vs foreign key</span>
+    <label class="check-wrap" onclick="event.stopPropagation()"><input type="checkbox" onchange="mark('s2',this)" id="c2"> got it</label>
+    <span class="chev" id="ch2">▾</span>
+  </div>
+  <div class="sbody" id="b2">
+    <dl class="kv">
+      <dt>primary key</dt><dd>The unique ID that belongs to a table. In autosys_jobs, <code>job_id</code> is the primary key — every job has exactly one, and no two jobs share the same one. It's like a passport number.</dd>
+      <dt>foreign key</dt><dd>When that same ID appears in a second table as a reference. In servicenow_tickets, <code>job_id</code> is a foreign key — it's saying "this ticket belongs to that job over there." It's the bridge between the two tables.</dd>
+      <dt>ON condition</dt><dd><code>ON aj.job_id = sn.job_id</code> — this is the instruction that tells SQL: "match rows from both tables wherever these two columns have the same value."</dd>
+    </dl>
+    <p>The autosys_jobs table <em>owns</em> the job_id. Every other table that references a job borrows that ID. The JOIN reunites them.</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 3 ══════════ ─ INNER -->
+<div class="section" id="s3">
+  <div class="section-head" onclick="tog('s3')">
+    <div class="snum" id="n3">03</div>
+    <span class="stitle">INNER JOIN</span>
+    <label class="check-wrap" onclick="event.stopPropagation()"><input type="checkbox" onchange="mark('s3',this)" id="c3"> got it</label>
+    <span class="chev" id="ch3">▾</span>
+  </div>
+  <div class="sbody" id="b3">
+    <div class="plain">Plain English: "Only show me rows that exist in both lists at the same time."</div>
+    <div class="venn-wrap">
+      <svg viewBox="0 0 260 110" width="240" height="100" role="img" aria-label="Two circles mostly grey with only the overlapping middle section filled in solid blue, representing that only matching rows from both tables are returned">
+        <circle cx="88" cy="55" r="46" fill="#D5D9E6" stroke="#A0AABF" stroke-width="1.5"/>
+        <circle cx="172" cy="55" r="46" fill="#D5D9E6" stroke="#A0AABF" stroke-width="1.5"/>
+        <ellipse cx="130" cy="55" rx="25" ry="40" fill="#2455C3"/>
+        <text x="56" y="35" font-size="10.5" fill="#5A6479" font-family="Inter,sans-serif" text-anchor="middle">autosys</text>
+        <text x="56" y="48" font-size="10.5" fill="#5A6479" font-family="Inter,sans-serif" text-anchor="middle">_jobs</text>
+        <text x="205" y="35" font-size="10.5" fill="#5A6479" font-family="Inter,sans-serif" text-anchor="middle">servicenow</text>
+        <text x="205" y="48" font-size="10.5" fill="#5A6479" font-family="Inter,sans-serif" text-anchor="middle">_tickets</text>
+        <text x="130" y="52" font-size="10" fill="#fff" font-family="Inter,sans-serif" text-anchor="middle" font-weight="500">match</text>
+        <text x="130" y="65" font-size="9.5" fill="rgba(255,255,255,0.75)" font-family="Inter,sans-serif" text-anchor="middle">only</text>
+      </svg>
+      <div class="venn-cap">blue region = rows returned · grey region = rows dropped</div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-block" id="code3">SELECT aj.job_id, aj.job_name, aj.status,
+       sn.ticket_id, sn.priority
+FROM autosys_jobs AS aj
+INNER JOIN servicenow_tickets AS sn
+    ON aj.job_id = sn.job_id;</div>
+      <button class="copy-btn" onclick="copy('code3',this)">copy</button>
+    </div>
+    <p>From our Meridian data: JOB005 disappears — it has no matching ticket, so INNER JOIN drops it entirely. JOB001 appears twice because it matched two tickets (INC001 and INC003). Result: <strong>5 rows</strong>.</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 4 ══════════ ─ LEFT -->
+<div class="section" id="s4">
+  <div class="section-head" onclick="tog('s4')">
+    <div class="snum" id="n4">04</div>
+    <span class="stitle">LEFT JOIN <span class="badge b-blue">most used</span></span>
+    <label class="check-wrap" onclick="event.stopPropagation()"><input type="checkbox" onchange="mark('s4',this)" id="c4"> got it</label>
+    <span class="chev" id="ch4">▾</span>
+  </div>
+  <div class="sbody" id="b4">
+    <div class="plain">Plain English: "Show me every row from the left list. For each one, add ticket info if it exists. Write NULL if it doesn't."</div>
+    <div class="venn-wrap">
+      <svg viewBox="0 0 260 110" width="240" height="100" role="img" aria-label="Left circle is entirely solid blue, right circle is grey except where it overlaps the left which is also blue, representing all left rows are returned with matches from the right">
+        <circle cx="88" cy="55" r="46" fill="#2455C3" stroke="#1A3E9E" stroke-width="1.5"/>
+        <circle cx="172" cy="55" r="46" fill="#D5D9E6" stroke="#A0AABF" stroke-width="1.5"/>
+        <ellipse cx="130" cy="55" rx="25" ry="40" fill="#2455C3"/>
+        <text x="56" y="35" font-size="10.5" fill="#fff" font-family="Inter,sans-serif" text-anchor="middle">autosys</text>
+        <text x="56" y="48" font-size="10.5" fill="#fff" font-family="Inter,sans-serif" text-anchor="middle">_jobs</text>
+        <text x="205" y="35" font-size="10.5" fill="#5A6479" font-family="Inter,sans-serif" text-anchor="middle">servicenow</text>
+        <text x="205" y="48" font-size="10.5" fill="#5A6479" font-family="Inter,sans-serif" text-anchor="middle">_tickets</text>
+        <text x="56" y="78" font-size="9.5" fill="rgba(255,255,255,0.75)" font-family="Inter,sans-serif" text-anchor="middle">NULL on</text>
+        <text x="56" y="89" font-size="9.5" fill="rgba(255,255,255,0.6)" font-family="Inter,sans-serif" text-anchor="middle">right side</text>
+      </svg>
+      <div class="venn-cap">entire left circle = all returned · right side fills in where a match is found</div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-block" id="code4">SELECT aj.job_id, aj.job_name, aj.status,
+       sn.ticket_id, sn.priority
+FROM autosys_jobs AS aj
+LEFT JOIN servicenow_tickets AS sn
+    ON aj.job_id = sn.job_id;</div>
+      <button class="copy-btn" onclick="copy('code4',this)">copy</button>
+    </div>
+    <p>From our Meridian data: JOB005 now stays in the result — with NULL written in the ticket columns because no matching ticket exists. JOB001 still appears twice. Result: <strong>6 rows</strong>.</p>
+    <p>This is the JOIN you will write most often. When you're unsure which JOIN to use, start here.</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 5 ══════════ ─ RIGHT -->
+<div class="section" id="s5">
+  <div class="section-head" onclick="tog('s5')">
+    <div class="snum" id="n5">05</div>
+    <span class="stitle">RIGHT JOIN <span class="badge b-amber">rarely written</span></span>
+    <label class="check-wrap" onclick="event.stopPropagation()"><input type="checkbox" onchange="mark('s5',this)" id="c5"> got it</label>
+    <span class="chev" id="ch5">▾</span>
+  </div>
+  <div class="sbody" id="b5">
+    <div class="plain">Plain English: "Show me every row from the right list. Add job info where it exists. Write NULL where it doesn't."</div>
+    <div class="venn-wrap">
+      <svg viewBox="0 0 260 110" width="240" height="100" role="img" aria-label="Right circle is entirely solid blue, left circle is grey except the overlap, representing all right rows are returned">
+        <circle cx="88" cy="55" r="46" fill="#D5D9E6" stroke="#A0AABF" stroke-width="1.5"/>
+        <circle cx="172" cy="55" r="46" fill="#2455C3" stroke="#1A3E9E" stroke-width="1.5"/>
+        <ellipse cx="130" cy="55" rx="25" ry="40" fill="#2455C3"/>
+        <text x="56" y="35" font-size="10.5" fill="#5A6479" font-family="Inter,sans-serif" text-anchor="middle">autosys</text>
+        <text x="56" y="48" font-size="10.5" fill="#5A6479" font-family="Inter,sans-serif" text-anchor="middle">_jobs</text>
+        <text x="205" y="35" font-size="10.5" fill="#fff" font-family="Inter,sans-serif" text-anchor="middle">servicenow</text>
+        <text x="205" y="48" font-size="10.5" fill="#fff" font-family="Inter,sans-serif" text-anchor="middle">_tickets</text>
+        <text x="205" y="78" font-size="9.5" fill="rgba(255,255,255,0.75)" font-family="Inter,sans-serif" text-anchor="middle">NULL on</text>
+        <text x="205" y="89" font-size="9.5" fill="rgba(255,255,255,0.6)" font-family="Inter,sans-serif" text-anchor="middle">left side</text>
+      </svg>
+      <div class="venn-cap">entire right circle = all returned · left side fills in where a match is found</div>
+    </div>
+    <p>Every RIGHT JOIN can be rewritten as a LEFT JOIN by swapping which table comes first. Most analysts just flip the tables and always write LEFT JOIN. Know that RIGHT JOIN exists — but you will almost never write it.</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 6 ══════════ ─ FULL OUTER -->
+<div class="section" id="s6">
+  <div class="section-head" onclick="tog('s6')">
+    <div class="snum" id="n6">06</div>
+    <span class="stitle">FULL OUTER JOIN</span>
+    <label class="check-wrap" onclick="event.stopPropagation()"><input type="checkbox" onchange="mark('s6',this)" id="c6"> got it</label>
+    <span class="chev" id="ch6">▾</span>
+  </div>
+  <div class="sbody" id="b6">
+    <div class="plain">Plain English: "Show me absolutely everything from both lists. Fill in NULL wherever there is no match on either side."</div>
+    <div class="venn-wrap">
+      <svg viewBox="0 0 260 110" width="240" height="100" role="img" aria-label="Both circles are entirely solid blue with no grey, representing every row from both tables is returned">
+        <circle cx="88" cy="55" r="46" fill="#2455C3" stroke="#1A3E9E" stroke-width="1.5"/>
+        <circle cx="172" cy="55" r="46" fill="#2455C3" stroke="#1A3E9E" stroke-width="1.5"/>
+        <text x="56" y="35" font-size="10.5" fill="#fff" font-family="Inter,sans-serif" text-anchor="middle">autosys</text>
+        <text x="56" y="48" font-size="10.5" fill="#fff" font-family="Inter,sans-serif" text-anchor="middle">_jobs</text>
+        <text x="205" y="35" font-size="10.5" fill="#fff" font-family="Inter,sans-serif" text-anchor="middle">servicenow</text>
+        <text x="205" y="48" font-size="10.5" fill="#fff" font-family="Inter,sans-serif" text-anchor="middle">_tickets</text>
+      </svg>
+      <div class="venn-cap">both circles = everything returned · NULL appears on whichever side has no match</div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-block" id="code6">SELECT aj.job_id, aj.job_name, aj.status,
+       sn.ticket_id, sn.priority
+FROM autosys_jobs AS aj
+FULL OUTER JOIN servicenow_tickets AS sn
+    ON aj.job_id = sn.job_id;</div>
+      <button class="copy-btn" onclick="copy('code6',this)">copy</button>
+    </div>
+    <p>From our Meridian data: JOB005 appears with NULLs on the ticket side (no match). All 5 tickets appear. JOB001 still appears twice. Result: <strong>6 rows</strong>.</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 7 ══════════ ─ NULL TRICK -->
+<div class="section" id="s7">
+  <div class="section-head" onclick="tog('s7')">
+    <div class="snum" id="n7">07</div>
+    <span class="stitle">The NULL pattern — finding what's missing</span>
+    <label class="check-wrap" onclick="event.stopPropagation()"><input type="checkbox" onchange="mark('s7',this)" id="c7"> got it</label>
+    <span class="chev" id="ch7">▾</span>
+  </div>
+  <div class="sbody" id="b7">
+    <div class="plain">Pattern: LEFT JOIN + WHERE right_key IS NULL → "find rows in the left table with nothing matching on the right"</div>
+    <p>Think of it like this: a teacher has an attendance sheet and a homework submission pile. LEFT JOIN combines them. <code>WHERE submission IS NULL</code> finds exactly which students didn't hand anything in.</p>
+    <div class="code-wrap">
+      <div class="code-block" id="code7">-- Which jobs ran with no ticket ever raised?
+SELECT aj.job_id, aj.job_name, aj.status
+FROM autosys_jobs AS aj
+LEFT JOIN servicenow_tickets AS sn
+    ON aj.job_id = sn.job_id
+WHERE sn.ticket_id IS NULL;</div>
+      <button class="copy-btn" onclick="copy('code7',this)">copy</button>
+    </div>
+    <p>This returns only JOB005. The LEFT JOIN kept it in the result with NULLs. The WHERE then says "only show me the ones where the ticket side is empty."</p>
+    <p>You will use this constantly: customers who never ordered, employees with no review, students who didn't submit. The pattern is always the same — LEFT JOIN, then WHERE right_key IS NULL.</p>
+  </div>
+</div>
+
+<!-- ══════════ QUIZ ══════════ -->
+<div class="section-gap">
+  <div class="block-title">Self-check — 5 questions</div>
+
+  <div class="q-card">
+    <div class="q-head"><span>You want every job from autosys_jobs, including ones with no ticket. Which JOIN type?</span><div class="q-right"><span class="q-num">Q1</span><button class="rev-btn" onclick="rev('a1',this)">reveal</button></div></div>
+    <div class="answer" id="a1">LEFT JOIN. The left table (autosys_jobs) is guaranteed to fully appear in the result. Jobs with no matching ticket show NULL in the ticket columns instead of being dropped.</div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-head"><span>An INNER JOIN returns 5 rows. A LEFT JOIN on the same tables returns 7. What do those extra 2 rows mean?</span><div class="q-right"><span class="q-num">Q2</span><button class="rev-btn" onclick="rev('a2',this)">reveal</button></div></div>
+    <div class="answer" id="a2">There are 2 rows in the left table with no match in the right table. INNER JOIN quietly dropped them. LEFT JOIN kept them, filling the right-side columns with NULL.</div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-head"><span>Why does JOB001 appear twice in a JOIN result, even though it only exists once in autosys_jobs?</span><div class="q-right"><span class="q-num">Q3</span><button class="rev-btn" onclick="rev('a3',this)">reveal</button></div></div>
+    <div class="answer" id="a3">JOB001 matched two rows in servicenow_tickets — INC001 and INC003. A JOIN creates one output row for every match it finds. One job matched twice = two output rows. This is called a one-to-many relationship.</div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-head"><span>Describe in plain words the pattern for finding jobs that never had a ticket raised.</span><div class="q-right"><span class="q-num">Q4</span><button class="rev-btn" onclick="rev('a4',this)">reveal</button></div></div>
+    <div class="answer" id="a4">LEFT JOIN servicenow_tickets on job_id, then add WHERE sn.ticket_id IS NULL. The LEFT JOIN keeps all jobs even those with no ticket. The IS NULL filter then isolates only the unmatched ones — the ones the JOIN filled with NULL on the right side.</div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-head"><span>You have a RIGHT JOIN. How do you rewrite it as a LEFT JOIN without changing the result?</span><div class="q-right"><span class="q-num">Q5</span><button class="rev-btn" onclick="rev('a5',this)">reveal</button></div></div>
+    <div class="answer" id="a5">Swap the table positions — move the right table into FROM, move the left table into the JOIN clause, then change RIGHT JOIN to LEFT JOIN. The result is identical. This is why most analysts just always use LEFT JOIN.</div>
+  </div>
+</div>
+
+<!-- ══════════ REFERENCE ══════════ -->
+<div style="margin-top:2rem">
+  <div class="block-title">Quick reference</div>
+  <div class="ref-table">
+    <div class="ref-row head"><span>type</span><span>what it returns</span><span>NULLs on</span></div>
+    <div class="ref-row"><span><span class="dot" style="background:#2455C3"></span>INNER JOIN</span><span>only rows that match in both tables</span><span style="color:var(--hint)">neither</span></div>
+    <div class="ref-row"><span><span class="dot" style="background:#0C7550"></span>LEFT JOIN</span><span>all left rows + matching right rows</span><span>right side</span></div>
+    <div class="ref-row"><span><span class="dot" style="background:#9A5800"></span>RIGHT JOIN</span><span>all right rows + matching left rows</span><span>left side</span></div>
+    <div class="ref-row"><span><span class="dot" style="background:#7C3AED"></span>FULL OUTER</span><span>every row from both tables</span><span>either side</span></div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>analytics-engineer-journey / module-01-sql / lesson-02</span>
+  <span>github.com/nabiya15</span>
+</div>
+
+</div>
+
+<script>
+function tog(id){
+  var i=id.slice(1),b=document.getElementById('b'+i),ch=document.getElementById('ch'+i),open=b.classList.contains('open');
+  b.classList.toggle('open',!open);ch.classList.toggle('open',!open);
+}
+function mark(id,cb){
+  var i=id.slice(1),num=document.getElementById('n'+i);
+  if(cb.checked){num.classList.add('done');num.textContent='✓';}
+  else{num.classList.remove('done');num.textContent='0'+i;}
+  try{localStorage.setItem('ae_join_'+id,cb.checked?'1':'0');}catch(e){}
+  updateProg();
+}
+function updateProg(){
+  var checks=document.querySelectorAll('.check-wrap input');
+  var done=Array.from(checks).filter(c=>c.checked).length,total=checks.length;
+  document.getElementById('prog').style.width=Math.round(done/total*100)+'%';
+  document.getElementById('prog-label').textContent=done+' / '+total+' sections';
+}
+function rev(id,btn){
+  var a=document.getElementById(id),show=!a.classList.contains('show');
+  a.classList.toggle('show',show);btn.textContent=show?'hide':'reveal';
+}
+function copy(id,btn){
+  navigator.clipboard.writeText(document.getElementById(id).textContent).then(function(){
+    btn.textContent='copied!';btn.classList.add('copied');
+    setTimeout(function(){btn.textContent='copy';btn.classList.remove('copied');},1500);
+  }).catch(function(){btn.textContent='select manually';setTimeout(function(){btn.textContent='copy';},2000);});
+}
+(function(){
+  for(var i=1;i<=7;i++){
+    try{var v=localStorage.getItem('ae_join_s'+i);if(v==='1'){var cb=document.getElementById('c'+i);if(cb){cb.checked=true;mark('s'+i,cb);}}}catch(e){}
+  }
+  updateProg();
+})();
+</script>
+</body>
+</html>
