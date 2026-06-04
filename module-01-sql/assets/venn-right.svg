@@ -1,12 +1,12 @@
-<svg viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg" width="300" height="130">
-  <circle cx="105" cy="68" r="52" fill="#D5D9E6" stroke="#A0AABF" stroke-width="1.5"/>
-  <circle cx="195" cy="68" r="52" fill="#2455C3" stroke="#1A3E9E" stroke-width="1.5"/>
-  <ellipse cx="150" cy="68" rx="26" ry="46" fill="#2455C3"/>
-  <text x="63" y="22" font-size="11" fill="#586074" text-anchor="middle" font-family="system-ui,sans-serif">autosys</text>
-  <text x="63" y="36" font-size="11" fill="#586074" text-anchor="middle" font-family="system-ui,sans-serif">_jobs</text>
-  <text x="237" y="22" font-size="11" fill="#ffffff" text-anchor="middle" font-family="system-ui,sans-serif">servicenow</text>
-  <text x="237" y="36" font-size="11" fill="#ffffff" text-anchor="middle" font-family="system-ui,sans-serif">_tickets</text>
-  <text x="233" y="78" font-size="10" fill="rgba(255,255,255,0.8)" text-anchor="middle" font-family="system-ui,sans-serif">NULL on</text>
-  <text x="233" y="91" font-size="10" fill="rgba(255,255,255,0.6)" text-anchor="middle" font-family="system-ui,sans-serif">left side</text>
-  <text x="150" y="122" font-size="10.5" fill="#9AA3B2" text-anchor="middle" font-family="system-ui,sans-serif">All right rows returned · left side fills in where matched</text>
+<svg viewBox="0 0 300 138" xmlns="http://www.w3.org/2000/svg" width="300" height="138">
+  <rect width="300" height="138" fill="#FAFAF8" rx="8"/>
+  <circle cx="105" cy="72" r="52" fill="#F0F2F7" stroke="#B8C0CC" stroke-width="1.5"/>
+  <circle cx="195" cy="72" r="52" fill="#BFDBFE" stroke="#2455C3" stroke-width="2"/>
+  <ellipse cx="150" cy="72" rx="28" ry="47" fill="#2455C3"/>
+  <text x="68" y="16" font-size="10.5" fill="#6B7280" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="500">autosys_jobs</text>
+  <text x="232" y="16" font-size="10.5" fill="#1D4ED8" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="600">servicenow_tickets</text>
+  <text x="82" y="72" font-size="10" fill="#9CA3AF" text-anchor="middle" font-family="system-ui,sans-serif">NULL</text>
+  <text x="82" y="84" font-size="10" fill="#9CA3AF" text-anchor="middle" font-family="system-ui,sans-serif">if no match</text>
+  <text x="228" y="78" font-size="10" fill="#1D4ED8" text-anchor="middle" font-family="system-ui,sans-serif">✓ all rows</text>
+  <text x="150" y="130" font-size="10" fill="#6B7280" text-anchor="middle" font-family="system-ui,sans-serif">All right rows returned · left side fills in where matched</text>
 </svg>
