@@ -1,10 +1,3 @@
---
----JOIN type            Question it answers
----INNER JOIN           Show me only jobs that have tickets
----LEFT JOIN            Show me all jobs, with ticket info where it exists
----RIGHT JOIN           Show me all tickets, with job info where it exists
----FULL OUTER JOIN      Show me everything from both tables regardless
---
 
 CREATE TABLE autosys_jobs (
   job_id TEXT,

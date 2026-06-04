@@ -1,4 +1,3 @@
-SELECT 'DuckDB is working inside .AEenv' AS status;
 -- ============================================
 -- Part 1 & 2: Basic SELECT and filtering
 -- Uses original tickets table (no resolution_hours column)
