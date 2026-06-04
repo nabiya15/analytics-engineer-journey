@@ -7,7 +7,7 @@
 
 # Module 01 — SQL Fundamentals
 
-*The language every data system speaks. Ask questions, filter answers, summarise data, connect tables.*
+_The language every data system speaks. Ask questions, filter answers, summarise data, connect tables._
 
 </div>
 
@@ -26,20 +26,20 @@
 
 ## Module overview
 
-| # | Lesson | Skills | Status |
-|---|--------|--------|--------|
-| 01 | SQL Basics | SELECT · WHERE · GROUP BY · ORDER BY | ✅ Complete |
-| 02 | JOINs | INNER · LEFT · RIGHT · FULL OUTER | ✅ Complete |
-| 03 | Subqueries & CASE | Nested queries · conditional logic | ⬜ Upcoming |
-| 04 | Window functions & CTEs | ROW_NUMBER · LAG · LEAD · WITH | ⬜ Upcoming |
+| #   | Lesson                  | Skills                               | Status      |
+| --- | ----------------------- | ------------------------------------ | ----------- |
+| 01  | SQL Basics              | SELECT · WHERE · GROUP BY · ORDER BY | ✅ Complete |
+| 02  | JOINs                   | INNER · LEFT · RIGHT · FULL OUTER    | ✅ Complete |
+| 03  | Subqueries & CASE       | Nested queries · conditional logic   | ⬜ Upcoming |
+| 04  | Window functions & CTEs | ROW_NUMBER · LAG · LEAD · WITH       | ⬜ Upcoming |
 
 **Files in this module**
 
-| File | Purpose |
-|------|---------|
-| [`lesson-01-basics.sql`](lesson-01-basics.sql) | All queries from Lesson 01 — commented |
-| [`lesson-02-joins.sql`](lesson-02-joins.sql) | All queries from Lesson 02 — commented |
-| [`practice-les-02-joins.sql`](practice-les-02-joins.sql) | JOIN practice — no hints, Copilot off |
+| File                                                                             | Purpose                                |
+| -------------------------------------------------------------------------------- | -------------------------------------- |
+| [`lessons/lesson-01-basics.sql`](lessons/lesson-01-basics.sql)                   | All queries from Lesson 01 — commented |
+| [`lessons/lesson-02-joins.sql`](lessons/lesson-02-joins.sql)                     | All queries from Lesson 02 — commented |
+| [`practice/lesson-02-joins-practice.sql`](practice/lesson-02-joins-practice.sql) | JOIN practice — no hints, Copilot off  |
 
 ---
 
@@ -59,15 +59,15 @@
 
 **The data** — one table, seven tickets.
 
-| ticket_id | type | priority | status | assigned_to | resolution_hours |
-|-----------|------|----------|--------|-------------|-----------------|
-| INC001 | Incident | High | Open | Nabiya | `NULL` |
-| INC002 | Incident | Low | Closed | Dev Team | 4 |
-| REQ001 | Request | Medium | Open | Nabiya | `NULL` |
-| INC003 | Incident | High | Closed | Dev Team | 12 |
-| REQ002 | Request | Low | Open | Nabiya | `NULL` |
-| INC004 | Incident | Medium | Open | Dev Team | `NULL` |
-| REQ003 | Request | High | Closed | Nabiya | 6 |
+| ticket_id | type     | priority | status | assigned_to | resolution_hours |
+| --------- | -------- | -------- | ------ | ----------- | ---------------- |
+| INC001    | Incident | High     | Open   | Nabiya      | `NULL`           |
+| INC002    | Incident | Low      | Closed | Dev Team    | 4                |
+| REQ001    | Request  | Medium   | Open   | Nabiya      | `NULL`           |
+| INC003    | Incident | High     | Closed | Dev Team    | 12               |
+| REQ002    | Request  | Low      | Open   | Nabiya      | `NULL`           |
+| INC004    | Incident | Medium   | Open   | Dev Team    | `NULL`           |
+| REQ003    | Request  | High     | Closed | Nabiya      | 6                |
 
 > `NULL` in `resolution_hours` = ticket still open, no resolution time recorded yet. `NULL` is not zero — it is the complete absence of a value.
 
@@ -75,7 +75,7 @@
 
 ### 01 · What is a database?
 
-> 💬 *A structured way to store information so you can ask questions about it later.*
+> 💬 _A structured way to store information so you can ask questions about it later._
 
 A **table** is like a spreadsheet tab. A **row** is one record. A **column** is one fact about that record. SQL is the language you use to ask questions about the table.
 
@@ -83,7 +83,7 @@ A **table** is like a spreadsheet tab. A **row** is one record. A **column** is 
 
 ### 02 · SELECT & FROM
 
-> 💬 *"Show me these columns from this table."*
+> 💬 _"Show me these columns from this table."_
 
 ```sql
 SELECT *                                  -- all columns
@@ -105,7 +105,7 @@ FROM tickets;
 
 ### 03 · WHERE
 
-> 💬 *"Only show me rows where this condition is true."*
+> 💬 _"Only show me rows where this condition is true."_
 
 ```sql
 SELECT * FROM tickets
@@ -140,7 +140,7 @@ WHERE status != 'Closed';
 
 ### 04 · GROUP BY & aggregations
 
-> 💬 *"Instead of showing individual rows, calculate something about them."*
+> 💬 _"Instead of showing individual rows, calculate something about them."_
 
 ```sql
 SELECT status, COUNT(*)            -- how many tickets per status?
@@ -167,7 +167,7 @@ GROUP BY priority;
 
 ### 05 · HAVING
 
-> 💬 *"`WHERE` filters rows before grouping. `HAVING` filters groups after."*
+> 💬 _"`WHERE` filters rows before grouping. `HAVING` filters groups after."_
 
 ```sql
 SELECT priority, AVG(resolution_hours)
@@ -189,7 +189,7 @@ Think of it as a conveyor belt. `WHERE` removes the rows you do not want. `GROUP
 
 ### 06 · ORDER BY & LIMIT
 
-> 💬 *"`ORDER BY` sorts results. `LIMIT` caps how many rows come back."*
+> 💬 _"`ORDER BY` sorts results. `LIMIT` caps how many rows come back."_
 
 ```sql
 SELECT ticket_id, priority, resolution_hours
@@ -226,7 +226,7 @@ END;
 
 ### 07 · NULL
 
-> 💬 *"`NULL` is not zero. It is not empty. It is the absence of any value."*
+> 💬 _"`NULL` is not zero. It is not empty. It is the absence of any value."_
 
 ```sql
 SELECT * FROM tickets
@@ -307,23 +307,23 @@ WHERE resolution_hours IS NULL;    -- open tickets with no resolution time
 
 **`autosys_jobs`**
 
-| job_id | job_name | status |
-|--------|----------|--------|
-| `JOB001` | Daily_Sales_ETL | ❌ Failed |
-| `JOB002` | Weekly_Report | ✅ Success |
-| `JOB003` | Monthly_Backup | ⏳ Running |
-| `JOB004` | Data_Cleanup | ❌ Failed |
-| `JOB005` | User_Tracking | ✅ Success |
+| job_id   | job_name        | status     |
+| -------- | --------------- | ---------- |
+| `JOB001` | Daily_Sales_ETL | ❌ Failed  |
+| `JOB002` | Weekly_Report   | ✅ Success |
+| `JOB003` | Monthly_Backup  | ⏳ Running |
+| `JOB004` | Data_Cleanup    | ❌ Failed  |
+| `JOB005` | User_Tracking   | ✅ Success |
 
 **`servicenow_tickets`**
 
-| ticket_id | job_id | priority | assigned_to |
-|-----------|--------|----------|-------------|
-| INC001 | `JOB001` | 🔴 High | Nabiya |
-| INC002 | `JOB004` | 🔴 High | Nabiya |
-| INC003 | `JOB001` | 🟡 Medium | Dev Team |
-| INC004 | `JOB003` | 🟢 Low | Nabiya |
-| INC005 | `JOB002` | 🟢 Low | Dev Team |
+| ticket_id | job_id   | priority  | assigned_to |
+| --------- | -------- | --------- | ----------- |
+| INC001    | `JOB001` | 🔴 High   | Nabiya      |
+| INC002    | `JOB004` | 🔴 High   | Nabiya      |
+| INC003    | `JOB001` | 🟡 Medium | Dev Team    |
+| INC004    | `JOB003` | 🟢 Low    | Nabiya      |
+| INC005    | `JOB002` | 🟢 Low    | Dev Team    |
 
 > 👀 **Notice before you write a single JOIN:** JOB001 appears twice in tickets (INC001 + INC003). JOB005 has no ticket. These two facts explain every result below.
 
@@ -331,13 +331,13 @@ WHERE resolution_hours IS NULL;    -- open tickets with no resolution time
 
 ### 01 · Why JOINs exist
 
-> 💬 *"A JOIN temporarily combines two tables into one result using a shared column."*
+> 💬 _"A JOIN temporarily combines two tables into one result using a shared column."_
 
 <details>
 <summary>The long version — and the key concept</summary>
 <br>
 
-Imagine both tables as physical notebooks. To answer *"which tickets belong to which failed job?"* you'd flip between notebooks and match job IDs by hand. A JOIN does that automatically.
+Imagine both tables as physical notebooks. To answer _"which tickets belong to which failed job?"_ you'd flip between notebooks and match job IDs by hand. A JOIN does that automatically.
 
 **Primary key:** The unique ID that belongs to a table. `job_id` in `autosys_jobs` — every job has exactly one, none share it.
 
@@ -353,7 +353,7 @@ The four JOIN types differ in only one thing: **what happens when a match doesn'
 
 ### 02 · INNER JOIN
 
-> 💬 *"Only show me rows that exist in **both** tables."*
+> 💬 _"Only show me rows that exist in **both** tables."_
 
 ![INNER JOIN](assets/venn-inner.svg)
 
@@ -379,7 +379,7 @@ INNER JOIN servicenow_tickets AS sn
 
 ### 03 · LEFT JOIN — most used
 
-> 💬 *"Show me every row from the left table. Fill in ticket info where it exists. `NULL` where it doesn't."*
+> 💬 _"Show me every row from the left table. Fill in ticket info where it exists. `NULL` where it doesn't."_
 
 ![LEFT JOIN](assets/venn-left.svg)
 
@@ -405,7 +405,7 @@ LEFT JOIN servicenow_tickets AS sn
 
 ### 04 · RIGHT JOIN — rarely written
 
-> 💬 *"Show me every row from the right table. Fill in job info where it exists. `NULL` where it doesn't."*
+> 💬 _"Show me every row from the right table. Fill in job info where it exists. `NULL` where it doesn't."_
 
 ![RIGHT JOIN](assets/venn-right.svg)
 
@@ -421,7 +421,7 @@ Every RIGHT JOIN can be rewritten as a LEFT JOIN by swapping which table comes f
 
 ### 05 · FULL OUTER JOIN
 
-> 💬 *"Show me absolutely everything from both tables. `NULL` wherever there is no match on either side."*
+> 💬 _"Show me absolutely everything from both tables. `NULL` wherever there is no match on either side."_
 
 ![FULL OUTER JOIN](assets/venn-full.svg)
 
@@ -448,7 +448,7 @@ FULL OUTER JOIN servicenow_tickets AS sn
 
 ### 06 · The NULL pattern — finding what's missing
 
-> 💬 *"LEFT JOIN + `WHERE right_key IS NULL` = find left rows with no match on the right."*
+> 💬 _"LEFT JOIN + `WHERE right_key IS NULL` = find left rows with no match on the right."_
 
 ```sql
 SELECT aj.job_id, aj.job_name, aj.status
@@ -465,6 +465,7 @@ WHERE sn.ticket_id IS NULL;
 The LEFT JOIN keeps JOB005 in the result with `NULL`s on the ticket side. The `WHERE sn.ticket_id IS NULL` then isolates only those unmatched rows.
 
 **You will use this constantly:**
+
 - Customers who never placed an order
 - Employees with no performance review on file
 - Failed jobs with no incident ticket raised
@@ -530,39 +531,39 @@ Swap the table positions — move the right table into `FROM`, the left table in
 
 ### Core clause order
 
-| Order | Clause | Does what |
-|-------|--------|-----------|
-| 1 | `FROM` | Specify the table |
-| 2 | `WHERE` | Filter rows before grouping |
-| 3 | `GROUP BY` | Bucket rows into groups |
-| 4 | `HAVING` | Filter groups after grouping |
-| 5 | `SELECT` | Choose which columns to show |
-| 6 | `ORDER BY` | Sort the final result |
-| 7 | `LIMIT` | Cap the number of rows returned |
+| Order | Clause     | Does what                       |
+| ----- | ---------- | ------------------------------- |
+| 1     | `FROM`     | Specify the table               |
+| 2     | `WHERE`    | Filter rows before grouping     |
+| 3     | `GROUP BY` | Bucket rows into groups         |
+| 4     | `HAVING`   | Filter groups after grouping    |
+| 5     | `SELECT`   | Choose which columns to show    |
+| 6     | `ORDER BY` | Sort the final result           |
+| 7     | `LIMIT`    | Cap the number of rows returned |
 
 ### JOIN types
 
-| | Type | Returns | NULLs on |
-|---|---|---|---|
-| 🔵 | `INNER JOIN` | Only rows matching in both tables | Neither |
-| 🟢 | `LEFT JOIN` | All left + matching right | Right side |
-| 🟡 | `RIGHT JOIN` | All right + matching left | Left side |
-| 🟣 | `FULL OUTER JOIN` | Everything from both tables | Either side |
+|     | Type              | Returns                           | NULLs on    |
+| --- | ----------------- | --------------------------------- | ----------- |
+| 🔵  | `INNER JOIN`      | Only rows matching in both tables | Neither     |
+| 🟢  | `LEFT JOIN`       | All left + matching right         | Right side  |
+| 🟡  | `RIGHT JOIN`      | All right + matching left         | Left side   |
+| 🟣  | `FULL OUTER JOIN` | Everything from both tables       | Either side |
 
 ### Common traps
 
-| Trap | Fix |
-|------|-----|
-| `WHERE x = NULL` returns nothing | Use `IS NULL` |
-| Alphabetical sort breaks priority order | Use `CASE` to assign numeric values |
-| JOIN returns more rows than expected | Check for one-to-many relationships |
-| `COUNT(*)` counts NULL rows | Use `COUNT(column)` to exclude NULLs |
+| Trap                                    | Fix                                  |
+| --------------------------------------- | ------------------------------------ |
+| `WHERE x = NULL` returns nothing        | Use `IS NULL`                        |
+| Alphabetical sort breaks priority order | Use `CASE` to assign numeric values  |
+| JOIN returns more rows than expected    | Check for one-to-many relationships  |
+| `COUNT(*)` counts NULL rows             | Use `COUNT(column)` to exclude NULLs |
 
 ---
 
 <div align="center">
 
-*analytics-engineer-journey &nbsp;·&nbsp; module-01-sql*
+_analytics-engineer-journey &nbsp;·&nbsp; module-01-sql_
 &nbsp;&nbsp;
 [github.com/nabiya15](https://github.com/nabiya15)
 
