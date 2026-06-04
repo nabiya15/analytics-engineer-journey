@@ -44,7 +44,15 @@ SELECT name, salary,
     END AS salary_band
 FROM employees;
 
-
+--  Query 1: Show all employees whose salary is above the average. Display name and salary.
 SELECT name, salary
 FROM employees
-WHERE salary > AVG(salary);
+WHERE salary > (SELECT AVG(salary) FROM employees);
+
+--  Query 2: Show all employees who have received at least one 'Urgent' follow-up review. Display name and department. The follow_up column lives in performance_reviews — use IN with a subquery to find the matching emp_id values first. No templates. Paste both queries and outputs.
+SELECT name, department
+FROM employees
+WHERE emp_id IN (
+    SELECT emp_id 
+    FROM performance_reviews
+    WHERE follow_up = 'Urgent');
