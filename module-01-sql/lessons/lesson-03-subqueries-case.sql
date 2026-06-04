@@ -43,3 +43,8 @@ SELECT name, salary,
         ELSE 'Junior'
     END AS salary_band
 FROM employees;
+
+
+SELECT name, salary
+FROM employees
+WHERE salary > AVG(salary);
