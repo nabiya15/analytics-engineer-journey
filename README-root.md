@@ -36,9 +36,9 @@ The curriculum runs from SQL basics to a full end-to-end data pipeline. Every mo
 
 | # | Module | Core skills | Status |
 |---|--------|------------|--------|
-| 01 | [SQL Fundamentals](module-01-sql/) | SELECT · WHERE · JOINs · Subqueries · Window functions | 🟡 In progress |
+| 01 | [SQL Fundamentals](module-01-sql/) | SELECT · WHERE · JOINs · Subqueries · CASE · Window functions | 🟡 In progress |
 | 02 | Python for Data | Variables · pandas · data cleaning · file I/O | ⬜ Upcoming |
-| 03 | Advanced SQL + Data Modeling | Star schema · dimensional modeling · CASE · COALESCE | ⬜ Upcoming |
+| 03 | Advanced SQL + Data Modeling | Star schema · dimensional modeling · dbt concepts | ⬜ Upcoming |
 | 04 | dbt Core | Models · sources · staging · marts · tests · docs | ⬜ Upcoming |
 | 05 | Capstone + Job Readiness | End-to-end pipeline · portfolio · resume · job search | ⬜ Upcoming |
 
@@ -52,12 +52,14 @@ The curriculum runs from SQL basics to a full end-to-end data pipeline. Every mo
 
 | # | Lesson | Status |
 |---|--------|--------|
-| 01 | SELECT, WHERE, aggregations, ORDER BY | ✅ Complete |
+| 01 | SELECT, WHERE, aggregations, ORDER BY, NULL | ✅ Complete |
 | 02 | JOINs — INNER, LEFT, RIGHT, FULL OUTER | ✅ Complete |
 | 03 | Subqueries and CASE statements | 🟡 In progress |
-| 04 | Window functions and CTEs | ⬜ Upcoming |
+| 04 | SQL Toolkit — LIKE, BETWEEN, dates, strings, UNION | ⬜ Upcoming |
+| 05 | Window functions and CTEs | ⬜ Upcoming |
 
-**Checkpoint:** ✅ Passed — [view file](module-01-sql/checkpoint/checkpoint-module-01-sql-fundamentals.sql)
+**Mid-module checkpoint (Lessons 01–02):** ✅ Conditional pass
+**Final checkpoint (all 5 lessons):** ⬜ Upcoming
 
 </details>
 
@@ -117,7 +119,9 @@ The role requires systems thinking — understanding not just how to query data,
 
 **Portfolio from day one.** Every exercise, every practice file, every checkpoint is committed to this repo with comments explaining the reasoning — not just the code. A hiring manager can open any file and see not just what was written, but why.
 
-**Reflections in every practice file.** At the end of each practice session, a comment block captures what went wrong, what clicked, and what to carry forward. These are written in plain language, not technical jargon.
+**Supplementary resources.** Core teaching happens in this curriculum. For interview drilling, [DataLemur](https://datalemur.com/sql-tutorial) is used in Module 05 — its question bank mirrors real FAANG SQL screens.
+
+**Reflections in every practice file.** At the end of each practice session, a comment block captures what went wrong, what clicked, and what to carry forward. Written in plain language, not technical jargon.
 
 </details>
 
