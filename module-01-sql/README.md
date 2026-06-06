@@ -2,7 +2,7 @@
 
 ![](https://img.shields.io/badge/Analytics_Engineer_Journey-Module_01-2455C3?style=flat-square)&nbsp;
 ![](https://img.shields.io/badge/Topic-SQL_Fundamentals-586074?style=flat-square)&nbsp;
-![](https://img.shields.io/badge/Lessons_Complete-2_of_5-0C7550?style=flat-square)&nbsp;
+![](https://img.shields.io/badge/Lessons_Complete-3_of_5-0C7550?style=flat-square)&nbsp;
 ![](https://img.shields.io/badge/Status-In_Progress-E8A020?style=flat-square)
 
 # Module 01 — SQL Fundamentals
@@ -33,8 +33,8 @@
 |---|--------|--------|--------|
 | 01 | SQL Basics | SELECT · WHERE · GROUP BY · HAVING · ORDER BY · NULL | ✅ Complete |
 | 02 | JOINs | INNER · LEFT · RIGHT · FULL OUTER · NULL pattern | ✅ Complete |
-| 03 | Subqueries & CASE | CASE · WHERE subquery · FROM subquery · COALESCE | 🟡 In progress |
-| 04 | SQL Toolkit | LIKE · BETWEEN · DISTINCT · dates · strings · UNION | ⬜ Upcoming |
+| 03 | Subqueries & CASE | CASE · WHERE subquery · FROM subquery · COALESCE | ✅ Complete |
+| 04 | SQL Toolkit | LIKE · BETWEEN · DISTINCT · dates · strings · UNION | 🟡 In progress |
 | 05 | Window functions & CTEs | ROW_NUMBER · RANK · LAG · LEAD · WITH | ⬜ Upcoming |
 
 **Files**
@@ -45,6 +45,7 @@
 | [`lessons/lesson-02-joins.sql`](lessons/lesson-02-joins.sql) | All queries from Lesson 02 — commented |
 | [`lessons/lesson-03-subqueries-case.sql`](lessons/lesson-03-subqueries-case.sql) | All queries from Lesson 03 — commented |
 | [`practice/lesson-02-joins-practice.sql`](practice/lesson-02-joins-practice.sql) | JOIN practice — no hints, Copilot off |
+| [`practice/lesson-03-subqueries-case-practice.sql`](practice/lesson-03-subqueries-case-practice.sql) | Subqueries & CASE practice — no hints, Copilot off |
 | [`checkpoint/checkpoint-module-01-sql-fundamentals.sql`](checkpoint/checkpoint-module-01-sql-fundamentals.sql) | Mid-module checkpoint (Lessons 01–02) — passed |
 
 ---
@@ -63,7 +64,7 @@
 
 <br>
 
-**The data** — a support ticket table. One row = one ticket. Seven tickets total.
+**The data** — one table, seven tickets.
 
 | ticket_id | type | priority | status | assigned_to | resolution_hours |
 |-----------|------|----------|--------|-------------|-----------------|
@@ -75,7 +76,7 @@
 | INC004 | Incident | Medium | Open | Dev Team | `NULL` |
 | REQ003 | Request | High | Closed | Nabiya | 6 |
 
-> `NULL` in `resolution_hours` means the ticket is still open — nobody has recorded a resolution time yet. `NULL` is not zero. It is not blank. It means **the value does not exist at all**.
+> `NULL` in `resolution_hours` = ticket still open. `NULL` is not zero — it is the complete absence of a value.
 
 ---
 
@@ -83,56 +84,26 @@
 
 > 💬 *A place that stores information in organised rows and columns so you can ask questions about it instantly.*
 
-Imagine a school that tracks students. Before computers, a teacher kept attendance in one notebook, grades in another notebook, and emergency contacts on a printed sheet. To find everything about one student, you checked three places. That is slow and error-prone.
-
-A database solves this by keeping all the information in one organised system. At Meridian Systems, instead of students, we have jobs and tickets. `autosys_jobs` is one table. `servicenow_tickets` is another. Every row is one thing. Every column is one fact about that thing.
-
-**A table** = one spreadsheet tab of organised information
-**A row** = one record (one ticket, one job, one employee)
-**A column** = one fact about every record in that table
-**SQL** = the language you write to ask questions about what is inside
+A **table** = one organised sheet of data. A **row** = one record. A **column** = one fact about every record. **SQL** = the language you write to ask questions.
 
 ---
 
 ### 02 · SELECT & FROM
 
-> 💬 *"Show me these specific columns from this specific table."*
+> 💬 *"Show me these columns from this table."*
 
 ```sql
-SELECT *
-FROM tickets;
+SELECT * FROM tickets;                          -- all columns
+SELECT ticket_id, priority, status FROM tickets; -- specific columns only
 ```
-
-`SELECT *` means "give me every column." Use this when you are exploring unfamiliar data and want to see everything.
-
-```sql
-SELECT ticket_id, priority, status
-FROM tickets;
-```
-
-Naming specific columns means SQL skips the ones you did not ask for. In real work at Meridian Systems, a table might have 80 columns. Asking for all 80 when you need 3 wastes memory and makes results hard to read.
-
-<details>
-<summary>What SELECT * returns from our data</summary>
-<br>
-
-All 7 rows, all 6 columns — exactly as the table above shows. No filtering, no sorting, just the raw data.
-
-</details>
 
 <details>
 <summary>Why column names have no quotes but text values do</summary>
 <br>
 
-Look at this line: `WHERE status = 'Open'`
+`status` is a column name — part of the table structure. `'Open'` is a value — data inside a cell. SQL needs quotes around values so it does not confuse them with column names.
 
-`status` has no quotes because it is a **column name** — it is part of the table's structure. SQL already knows it exists.
-
-`'Open'` has quotes because it is a **value** — actual text data stored inside a cell. Without quotes, SQL would try to find a column called `Open`, fail, and throw an error.
-
-Simple rule: **structure (columns, tables) = no quotes. Data (text values) = single quotes.**
-
-Numbers never need quotes: `WHERE resolution_hours = 4` not `WHERE resolution_hours = '4'`.
+Rule: **structure = no quotes. Data = single quotes. Numbers = no quotes.**
 
 </details>
 
@@ -140,57 +111,21 @@ Numbers never need quotes: `WHERE resolution_hours = 4` not `WHERE resolution_ho
 
 ### 03 · WHERE
 
-> 💬 *"Only show me rows where this condition is true. Ignore all other rows."*
+> 💬 *"Only show rows where this condition is true."*
 
 ```sql
-SELECT * FROM tickets
-WHERE status = 'Open';
+SELECT * FROM tickets WHERE status = 'Open';
 ```
-
-SQL reads every row in `tickets`. For each row it asks: is `status` equal to `'Open'`? If yes, include it in the result. If no, skip it. You get back only the matching rows.
-
-<details>
-<summary>What this returns — 4 rows</summary>
-<br>
-
-| ticket_id | priority | status | assigned_to |
-|-----------|----------|--------|-------------|
-| INC001 | High | Open | Nabiya |
-| REQ001 | Medium | Open | Nabiya |
-| REQ002 | Low | Open | Nabiya |
-| INC004 | Medium | Open | Dev Team |
-
-INC002, INC003, REQ003 are gone — they are Closed.
-
-</details>
 
 <details>
 <summary>Combining conditions — AND · OR · !=</summary>
 <br>
 
-**AND** — both conditions must be true for a row to appear:
 ```sql
-SELECT * FROM tickets
-WHERE priority = 'High' AND status = 'Open';
--- Only rows that are BOTH High priority AND Open
--- Returns: INC001 only
+WHERE priority = 'High' AND status = 'Open';    -- both must be true
+WHERE assigned_to = 'Nabiya' OR assigned_to = 'Dev Team'; -- either
+WHERE status != 'Closed';                        -- not equal to
 ```
-
-**OR** — at least one condition must be true:
-```sql
-SELECT * FROM tickets
-WHERE assigned_to = 'Nabiya' OR assigned_to = 'Dev Team';
--- Every ticket belongs to one of these two, so all 7 rows return
-```
-
-**!=** — not equal to (the opposite of =):
-```sql
-SELECT * FROM tickets
-WHERE status != 'Closed';
--- Returns everything that is NOT Closed = 4 open tickets
-```
-
-> ⚠️ `WHERE status != 'Closed'` and `WHERE status = 'Open'` return identical rows here — because `status` only has two possible values in this dataset. The moment a third value like `'Pending'` is added, they behave differently. Always check what values actually exist in a column before assuming two conditions are equivalent.
 
 </details>
 
@@ -198,71 +133,21 @@ WHERE status != 'Closed';
 
 ### 04 · GROUP BY & aggregations
 
-> 💬 *"Instead of showing me individual rows, count them, add them up, or average them — grouped by category."*
-
-Without GROUP BY, every query returns individual rows. With GROUP BY, SQL sorts rows into buckets (one bucket per unique value in the column you choose), then runs a calculation on each bucket.
-
-Think of it like this: a teacher has 30 test papers scattered on a desk. `GROUP BY grade` means "sort them into piles by grade first (A pile, B pile, C pile), then count how many are in each pile."
+> 💬 *"Sort rows into buckets, then calculate something about each bucket."*
 
 ```sql
-SELECT status, COUNT(*)
-FROM tickets
-GROUP BY status;
+SELECT status, COUNT(*) FROM tickets GROUP BY status;
+SELECT priority, AVG(resolution_hours) FROM tickets
+WHERE status = 'Closed' GROUP BY priority;
 ```
 
-SQL creates two buckets: one for "Open" rows and one for "Closed" rows. Then it counts how many rows landed in each.
-
 <details>
-<summary>What this returns</summary>
+<summary>COUNT(*) vs COUNT(column) · Execution order</summary>
 <br>
 
-| status | count_star |
-|--------|-----------|
-| Open | 4 |
-| Closed | 3 |
+`COUNT(*)` counts all rows including NULLs. `COUNT(column)` skips NULLs.
 
-</details>
-
-```sql
-SELECT priority, AVG(resolution_hours)
-FROM tickets
-WHERE status = 'Closed'
-GROUP BY priority;
-```
-
-`WHERE status = 'Closed'` runs first — this removes the 4 open tickets. Then `GROUP BY priority` buckets the remaining 3 closed tickets by their priority. Then `AVG(resolution_hours)` calculates the average hours inside each bucket.
-
-<details>
-<summary>What this returns — 3 buckets from 3 closed tickets</summary>
-<br>
-
-| priority | avg_resolution_hours |
-|----------|---------------------|
-| Low | 4.0 |
-| High | 12.0 |
-| High | 6.0 |
-
-Wait — two High rows? That means INC002 and INC003 are in the same priority bucket (both High... but wait, INC002 is Low). Check the original table. INC002 is Low (4 hrs), INC003 is High (12 hrs), REQ003 is High (6 hrs). So:
-- Low bucket: just INC002 → AVG = 4.0
-- High bucket: INC003 + REQ003 → AVG = (12+6)/2 = 9.0
-
-| priority | avg_resolution_hours |
-|----------|---------------------|
-| Low | 4.0 |
-| High | 9.0 |
-
-</details>
-
-<details>
-<summary>COUNT(*) vs COUNT(column) — why they give different answers</summary>
-<br>
-
-`COUNT(*)` counts every row, including rows with `NULL` values.
-`COUNT(resolution_hours)` counts only rows where `resolution_hours` is not `NULL`.
-
-From our data: `COUNT(*)` = 7. `COUNT(resolution_hours)` = 3. The 4 open tickets have `NULL` in that column and are skipped.
-
-Use `COUNT(column)` when NULLs should not be counted. Use `COUNT(*)` when every row matters regardless of NULLs.
+**Order:** `WHERE` runs first → `GROUP BY` buckets what survives → `HAVING` filters the buckets.
 
 </details>
 
@@ -270,86 +155,30 @@ Use `COUNT(column)` when NULLs should not be counted. Use `COUNT(*)` when every 
 
 ### 05 · HAVING
 
-> 💬 *"After you have grouped the rows, filter out the groups you do not want."*
-
-You cannot use `WHERE` to filter on `COUNT(*)` or `AVG()` because `WHERE` runs **before** grouping happens — the groups do not exist yet at that point. `HAVING` runs **after** grouping, so it can see the group totals.
+> 💬 *"Filter groups after grouping. WHERE filters rows before grouping."*
 
 ```sql
 SELECT priority, AVG(resolution_hours)
-FROM tickets
-WHERE status = 'Closed'
-GROUP BY priority
-HAVING AVG(resolution_hours) > 5;
+FROM tickets WHERE status = 'Closed'
+GROUP BY priority HAVING AVG(resolution_hours) > 5;
 ```
-
-**Here is exactly what SQL does, step by step:**
-
-1. `FROM tickets` — load all 7 rows into memory
-2. `WHERE status = 'Closed'` — remove the 4 open rows, keep 3
-3. `GROUP BY priority` — sort the 3 remaining rows into priority buckets
-4. `HAVING AVG(resolution_hours) > 5` — calculate the average for each bucket, remove buckets where the average is 5 or below
-5. `SELECT priority, AVG(resolution_hours)` — show the surviving buckets
-
-<details>
-<summary>What this returns</summary>
-<br>
-
-| priority | avg_resolution_hours |
-|----------|---------------------|
-| High | 9.0 |
-
-The Low bucket (average = 4.0) is removed by HAVING. Only High remains.
-
-</details>
 
 ---
 
 ### 06 · ORDER BY & LIMIT
 
-> 💬 *"`ORDER BY` sorts your results. `LIMIT` cuts the list to the top N rows."*
+> 💬 *"Sort results. Cap how many rows come back."*
 
 ```sql
-SELECT ticket_id, priority, resolution_hours
-FROM tickets
-WHERE status = 'Closed'
-ORDER BY resolution_hours ASC
-LIMIT 2;
+SELECT ticket_id, priority, resolution_hours FROM tickets
+WHERE status = 'Closed' ORDER BY resolution_hours ASC LIMIT 2;
 ```
 
-`ASC` = ascending = smallest to largest. `DESC` = descending = largest to smallest.
-
 <details>
-<summary>What this returns — the 2 fastest resolved tickets</summary>
+<summary>The text-sort trap</summary>
 <br>
 
-| ticket_id | priority | resolution_hours |
-|-----------|----------|-----------------|
-| INC002 | Low | 4 |
-| REQ003 | High | 6 |
-
-INC003 (12 hours) is cut by LIMIT 2.
-
-</details>
-
-<details>
-<summary>⚠️ The text-sort trap — why sorting priority alphabetically is broken</summary>
-<br>
-
-If you run `ORDER BY priority ASC` on text values, SQL sorts alphabetically — the same way a dictionary does. The result:
-
-| priority | (alphabetical position) |
-|----------|------------------------|
-| High | H = 8th letter |
-| Low | L = 12th letter |
-| Medium | M = 13th letter |
-
-So alphabetically: **High → Low → Medium**
-
-That is wrong. Medium is more urgent than Low. SQL does not know that. It only knows the alphabet.
-
-Now add a `'Critical'` priority level. `C` comes before `H`, so Critical sorts first. But Critical is the most urgent — that happens to be correct by coincidence. Add `'Urgent'` and `U` sorts last, making Urgent appear least important. Completely broken.
-
-The fix is `CASE` — covered in Lesson 03. `CASE` assigns a number to each word so SQL sorts numbers instead of letters.
+`ORDER BY priority ASC` gives `High → Low → Medium` — alphabetical, not urgency order. Fix: use CASE to assign numbers. Covered in Lesson 03.
 
 </details>
 
@@ -357,36 +186,19 @@ The fix is `CASE` — covered in Lesson 03. `CASE` assigns a number to each word
 
 ### 07 · NULL
 
-> 💬 *"`NULL` means 'no value exists here.' It is not zero. It is not an empty string. The field was never filled in."*
-
-Imagine a job application form. If someone skips the "Middle Name" field entirely, the database stores `NULL` — not an empty box, not the word "none", but a complete absence. A middle name that is an empty string `''` and a middle name that is `NULL` are different things: one person typed nothing, the other person left the field blank before even clicking.
+> 💬 *"NULL means no value exists. Not zero. Not blank. Nothing."*
 
 ```sql
-SELECT ticket_id, status, resolution_hours
-FROM tickets
-WHERE resolution_hours IS NULL;
+SELECT * FROM tickets WHERE resolution_hours IS NULL;
 ```
 
-This returns all tickets that have never been resolved — the open ones.
-
 <details>
-<summary>Why = NULL never works</summary>
+<summary>Why = NULL never works · NULL in COUNT and ORDER BY</summary>
 <br>
 
-`WHERE resolution_hours = NULL` always returns zero rows. Here is why: `NULL` has no value. You cannot check if something equals the absence of a value. Asking "is nothing equal to nothing?" is not a question SQL can answer — it returns `NULL` (unknown), not `TRUE`.
+`WHERE x = NULL` always returns zero rows. You cannot compare something to nothing. Always use `IS NULL` or `IS NOT NULL`.
 
-Always use `IS NULL` or `IS NOT NULL` — never `= NULL`.
-
-</details>
-
-<details>
-<summary>NULL surprises in COUNT and ORDER BY</summary>
-<br>
-
-**In COUNT:** `COUNT(*)` counts every row including those with NULL. `COUNT(resolution_hours)` skips rows where that column is NULL.
-From our data: `COUNT(*)` = 7, `COUNT(resolution_hours)` = 3. Four tickets are still open with NULL resolution times.
-
-**In ORDER BY:** NULL values have no numeric position so SQL does not know where to put them. Different databases handle this differently — some float NULL to the top, some to the bottom. DuckDB floats them to the top on `DESC` sort. Never assume. Always check.
+`COUNT(*)` includes NULLs. `COUNT(column)` ignores them. NULL values in `ORDER BY` land in unpredictable positions.
 
 </details>
 
@@ -397,34 +209,26 @@ From our data: `COUNT(*)` = 7, `COUNT(resolution_hours)` = 3. Four tickets are s
 <br>
 
 <details>
-<summary>Q1 · What is the difference between WHERE and HAVING?</summary>
+<summary>Q1 · Difference between WHERE and HAVING?</summary>
 <br>
 
-`WHERE` filters individual rows before they are grouped. `HAVING` filters groups after `GROUP BY` has run. You cannot use `WHERE` to filter on `COUNT(*)` or `AVG()` — those values do not exist until after grouping.
+`WHERE` filters rows before grouping. `HAVING` filters groups after `GROUP BY`. You cannot use `WHERE` with `COUNT(*)` or `AVG()`.
 
 </details>
 
 <details>
-<summary>Q2 · Why does <code>WHERE resolution_hours = NULL</code> return zero rows?</summary>
+<summary>Q2 · Why does WHERE resolution_hours = NULL return nothing?</summary>
 <br>
 
-`NULL` means no value exists. You cannot compare something to the absence of a value using `=`. SQL evaluates the comparison as unknown (not true), so no rows pass the filter. Use `IS NULL`.
+NULL has no value. Nothing equals the absence of a value. Use `IS NULL`.
 
 </details>
 
 <details>
-<summary>Q3 · Count how many tickets each person is assigned — write it in words.</summary>
+<summary>Q3 · What breaks when sorting priority alphabetically?</summary>
 <br>
 
-`SELECT assigned_to, COUNT(*) FROM tickets GROUP BY assigned_to` — group rows by person, count how many rows land in each group.
-
-</details>
-
-<details>
-<summary>Q4 · What breaks when you sort text priority alphabetically?</summary>
-<br>
-
-Alphabetical order gives `High → Low → Medium`. Low appears before Medium even though Medium is more urgent. Adding new priority levels like `'Critical'` or `'Urgent'` makes it worse — they sort by their first letter, not by urgency. Use `CASE` to assign numbers before sorting.
+`High → Low → Medium` is not urgency order. Use CASE to assign numbers before sorting.
 
 </details>
 
@@ -446,188 +250,90 @@ Alphabetical order gives `High → Low → Medium`. Low appears before Medium ev
 
 <br>
 
-**The scenario** — Two tables. One connection.
+**The scenario** — `autosys_jobs` ⏰ tracks automated task runs. `servicenow_tickets` 🎫 tracks reported problems. Both share `job_id` — that column is the bridge.
 
-At Meridian Systems, two teams built two separate systems. The infrastructure team built Autosys to schedule and track automated jobs. The support team built ServiceNow to track problems when those jobs break. Nobody planned for these two systems to talk to each other — but they both record `job_id`, which means we can connect them in SQL.
+> 🔑 `job_id` is like a student ID — appears in both tables, connects records across them.
 
-> 🔑 **The shared column is the key.** Think of `job_id` like a student ID number. If both the attendance sheet and the report card use the same student ID, a teacher can look up any student across both sheets — even though they were made by different people at different times. The student ID is what connects them.
+**`autosys_jobs`** · **`servicenow_tickets`**
 
-**`autosys_jobs`** — the alarm clock that runs tasks on a schedule
+| job_id | status | | ticket_id | job_id | priority |
+|--------|--------|-|-----------|--------|----------|
+| JOB001 | ❌ Failed | | INC001 | JOB001 | 🔴 High |
+| JOB002 | ✅ Success | | INC002 | JOB004 | 🔴 High |
+| JOB003 | ⏳ Running | | INC003 | JOB001 | 🟡 Medium |
+| JOB004 | ❌ Failed | | INC004 | JOB003 | 🟢 Low |
+| JOB005 | ✅ Success | | INC005 | JOB002 | 🟢 Low |
 
-| job_id | job_name | status |
-|--------|----------|--------|
-| `JOB001` | Daily_Sales_ETL | ❌ Failed |
-| `JOB002` | Weekly_Report | ✅ Success |
-| `JOB003` | Monthly_Backup | ⏳ Running |
-| `JOB004` | Data_Cleanup | ❌ Failed |
-| `JOB005` | User_Tracking | ✅ Success |
-
-**`servicenow_tickets`** — the help-desk notebook of reported problems
-
-| ticket_id | job_id | priority | assigned_to |
-|-----------|--------|----------|-------------|
-| INC001 | `JOB001` | 🔴 High | Nabiya |
-| INC002 | `JOB004` | 🔴 High | Nabiya |
-| INC003 | `JOB001` | 🟡 Medium | Dev Team |
-| INC004 | `JOB003` | 🟢 Low | Nabiya |
-| INC005 | `JOB002` | 🟢 Low | Dev Team |
-
-> 👀 **Two things that drive every JOIN result below:**
-> 1. **JOB001 has two tickets** (INC001 and INC003) — one job, two problems raised for it
-> 2. **JOB005 has no ticket** — it ran successfully so nobody complained
+> 👀 JOB001 has **two** tickets. JOB005 has **none**. These drive every JOIN result.
 
 ---
 
-### 01 · Why JOINs exist
+### 01 · INNER JOIN
 
-> 💬 *"A JOIN temporarily combines two tables into one result using matching values in a shared column."*
-
-Run `SELECT * FROM autosys_jobs` and you see jobs. Run `SELECT * FROM servicenow_tickets` and you see tickets. Neither result alone can answer: *"Which tickets belong to which failed jobs?"*
-
-A JOIN reads both tables at once and stitches together rows where `job_id` matches. The result is a temporary combined table that exists only for that query — the original tables are untouched.
-
-The four JOIN types answer four different versions of the same question — they differ only in **what happens to rows that have no match**.
-
----
-
-### 02 · Keys — what connects two tables
-
-> 💬 *"The primary key owns the ID. The foreign key borrows it."*
-
-| Term | What it means | In our data |
-|------|--------------|-------------|
-| **Primary key** | The unique ID that belongs to this table. Every row has exactly one — no duplicates. | `job_id` in `autosys_jobs` |
-| **Foreign key** | That same ID appearing in a second table as a reference pointing back to the first. | `job_id` in `servicenow_tickets` |
-| **ON condition** | The instruction telling SQL which columns to match when combining rows. | `ON aj.job_id = sn.job_id` |
-
-`autosys_jobs` *owns* `job_id`. `servicenow_tickets` *borrows* it. The JOIN uses `ON` to reunite them.
-
----
-
-### 03 · INNER JOIN
-
-> 💬 *"Only show me rows that have a matching partner in both tables. Drop everyone with no match."*
+> 💬 *"Only rows matching in both tables. No match = dropped."*
 
 ![INNER JOIN](assets/venn-inner.svg)
 
 ```sql
-SELECT aj.job_id, aj.job_name, aj.status,
-       sn.ticket_id, sn.priority
+SELECT aj.job_id, aj.job_name, sn.ticket_id, sn.priority
 FROM autosys_jobs AS aj
-INNER JOIN servicenow_tickets AS sn
-    ON aj.job_id = sn.job_id;
+INNER JOIN servicenow_tickets AS sn ON aj.job_id = sn.job_id;
+-- JOB005 disappears. JOB001 appears twice. Result: 5 rows.
 ```
-
-<details>
-<summary>Result · 5 rows — and why</summary>
-<br>
-
-| job_id | job_name | status | ticket_id | priority |
-|--------|----------|--------|-----------|----------|
-| JOB001 | Daily_Sales_ETL | Failed | INC001 | High |
-| JOB001 | Daily_Sales_ETL | Failed | INC003 | Medium |
-| JOB002 | Weekly_Report | Success | INC005 | Low |
-| JOB003 | Monthly_Backup | Running | INC004 | Low |
-| JOB004 | Data_Cleanup | Failed | INC002 | High |
-
-**JOB005 disappeared** — it has no row in `servicenow_tickets`, so INNER JOIN drops it entirely.
-**JOB001 appears twice** — it matched two tickets (INC001 and INC003). One job paired with two tickets = two output rows. This is called a **one-to-many relationship**.
-
-</details>
 
 ---
 
-### 04 · LEFT JOIN — most used
+### 02 · LEFT JOIN — most used
 
-> 💬 *"Keep every row from the left table no matter what. For each one, attach ticket info if a match exists. Write NULL if no match exists."*
+> 💬 *"All left rows. Right fills in where matched. NULL where it doesn't."*
 
 ![LEFT JOIN](assets/venn-left.svg)
 
 ```sql
-SELECT aj.job_id, aj.job_name, aj.status,
-       sn.ticket_id, sn.priority
+SELECT aj.job_id, aj.job_name, sn.ticket_id, sn.priority
 FROM autosys_jobs AS aj
-LEFT JOIN servicenow_tickets AS sn
-    ON aj.job_id = sn.job_id;
+LEFT JOIN servicenow_tickets AS sn ON aj.job_id = sn.job_id;
+-- JOB005 stays with NULL ticket columns. Result: 6 rows.
 ```
-
-<details>
-<summary>Result · 6 rows — and why JOB005 is now back</summary>
-<br>
-
-| job_id | job_name | status | ticket_id | priority |
-|--------|----------|--------|-----------|----------|
-| JOB001 | Daily_Sales_ETL | Failed | INC001 | High |
-| JOB001 | Daily_Sales_ETL | Failed | INC003 | Medium |
-| JOB002 | Weekly_Report | Success | INC005 | Low |
-| JOB003 | Monthly_Backup | Running | INC004 | Low |
-| JOB004 | Data_Cleanup | Failed | INC002 | High |
-| JOB005 | User_Tracking | Success | NULL | NULL |
-
-JOB005 is now in the result — but its ticket columns are NULL because no match existed. The left table (autosys_jobs) is guaranteed to appear in full. When in doubt, start with LEFT JOIN.
-
-</details>
 
 ---
 
-### 05 · RIGHT JOIN — rarely written
+### 03 · RIGHT JOIN — rarely written
 
-> 💬 *"Keep every row from the right table. Attach job info where it matches. NULL where it doesn't."*
+> 💬 *"All right rows. Left fills in where matched."*
 
 ![RIGHT JOIN](assets/venn-right.svg)
 
-<details>
-<summary>Why you will almost never write this</summary>
-<br>
-
-Every RIGHT JOIN rewrites as a LEFT JOIN by swapping table order. Most analysts always write LEFT JOIN and flip the tables. The only reason RIGHT JOIN exists is for symmetry — know it, do not reach for it.
-
-</details>
+Every RIGHT JOIN rewrites as a LEFT JOIN by swapping table order. Always use LEFT JOIN in practice.
 
 ---
 
-### 06 · FULL OUTER JOIN
+### 04 · FULL OUTER JOIN
 
-> 💬 *"Keep every row from both tables. NULL fills in wherever no match exists on either side."*
+> 💬 *"Everything from both tables. NULL on whichever side has no match."*
 
 ![FULL OUTER JOIN](assets/venn-full.svg)
 
 ```sql
-SELECT aj.job_id, aj.job_name, aj.status,
-       sn.ticket_id, sn.priority
+SELECT aj.job_id, aj.job_name, sn.ticket_id, sn.priority
 FROM autosys_jobs AS aj
-FULL OUTER JOIN servicenow_tickets AS sn
-    ON aj.job_id = sn.job_id;
+FULL OUTER JOIN servicenow_tickets AS sn ON aj.job_id = sn.job_id;
 ```
-
-<details>
-<summary>Result · 6 rows — when is this actually useful?</summary>
-<br>
-
-Same 6 rows as LEFT JOIN in our dataset because every ticket has a matching job. FULL OUTER becomes useful when you need to find gaps on *both* sides simultaneously — for example, jobs with no ticket AND tickets with no job in the same result.
-
-</details>
 
 ---
 
-### 07 · The NULL pattern — finding what's missing
+### 05 · The NULL pattern — finding what's missing
 
-> 💬 *"LEFT JOIN + `WHERE right_key IS NULL` finds left-side rows that have no partner on the right."*
-
-A teacher has an attendance sheet and a homework submission pile. LEFT JOIN combines them into one view. `WHERE submission IS NULL` then points at exactly the students who did not hand anything in.
+> 💬 *"LEFT JOIN + WHERE right_key IS NULL = rows with no match on the right."*
 
 ```sql
--- Which jobs ran with no ticket ever raised?
 SELECT aj.job_id, aj.job_name, aj.status
 FROM autosys_jobs AS aj
-LEFT JOIN servicenow_tickets AS sn
-    ON aj.job_id = sn.job_id
-WHERE sn.job_id IS NULL;
+LEFT JOIN servicenow_tickets AS sn ON aj.job_id = sn.job_id
+WHERE sn.job_id IS NULL;  -- returns JOB005 only
 ```
 
-The LEFT JOIN keeps JOB005 in the result with NULLs on the ticket side. The WHERE then says: *"from everything the LEFT JOIN gave me, show me only the rows where the ticket side is empty."* Returns only JOB005.
-
-> ⚠️ Use `WHERE sn.job_id IS NULL` — check NULL on the JOIN key (the column you matched on), not on a data column like `sn.priority`. A data column could legitimately hold NULL for other reasons. The JOIN key is NULL only when there was no match.
+> ⚠️ Always check IS NULL on the **JOIN key**, not a data column. A data column could have legitimate NULLs for other reasons.
 
 ---
 
@@ -636,26 +342,26 @@ The LEFT JOIN keeps JOB005 in the result with NULLs on the ticket side. The WHER
 <br>
 
 <details>
-<summary>Q1 · You want every job including those with no ticket. Which JOIN?</summary>
+<summary>Q1 · Every job including those with no ticket — which JOIN?</summary>
 <br>
 
-LEFT JOIN with `autosys_jobs` as the FROM table. The left table appears fully. Jobs with no matching ticket get NULL in the ticket columns instead of being dropped.
+LEFT JOIN. Left table appears in full. Unmatched rows get NULL on the right side.
 
 </details>
 
 <details>
-<summary>Q2 · INNER JOIN returns 5 rows. LEFT JOIN returns 7. What do the extra 2 mean?</summary>
+<summary>Q2 · INNER returns 5, LEFT returns 7 — what do the extra 2 mean?</summary>
 <br>
 
-2 rows in the left table have no match in the right table. INNER JOIN silently dropped them. LEFT JOIN kept them with NULL in the right-side columns.
+2 rows in the left table have no match. INNER dropped them. LEFT kept them with NULLs.
 
 </details>
 
 <details>
-<summary>Q3 · Why does JOB001 appear twice in the JOIN result?</summary>
+<summary>Q3 · Why does JOB001 appear twice?</summary>
 <br>
 
-JOB001 matched two rows in `servicenow_tickets` (INC001 and INC003). A JOIN creates one output row per match found. One job × two tickets = two output rows. This is a one-to-many relationship.
+JOB001 matched two rows in servicenow_tickets. One job × two tickets = two output rows. One-to-many relationship.
 
 </details>
 
@@ -671,58 +377,48 @@ JOB001 matched two rows in `servicenow_tickets` (INC001 and INC003). A JOIN crea
 
 ![](https://img.shields.io/badge/Lesson-03_of_05-586074?style=flat-square)&nbsp;
 ![](https://img.shields.io/badge/Skills-CASE_·_Subqueries_·_COALESCE-2455C3?style=flat-square)&nbsp;
-![](https://img.shields.io/badge/Status-🟡_In_Progress-E8A020?style=flat-square)
+![](https://img.shields.io/badge/Status-✓_Complete-0C7550?style=flat-square)
 
 </div>
 
 <br>
 
-**What this lesson actually fixes and adds:**
+**What this lesson fixes and adds — be specific:**
 
-**Fix 1 — The broken sort order you found in Lesson 01.**
-When you sort `priority` alphabetically, SQL gives you `High → Low → Medium`. That is wrong. `CASE` lets you secretly swap each word for a number *before* sorting happens — High becomes 1, Medium becomes 2, Low becomes 3. SQL then sorts 1, 2, 3 instead of letters. The order is correct. That is all CASE does in this context: it replaces a word with a number so SQL can reason about order.
+**Problem 1 — broken sort order (from Lesson 01).**
+When you sort `priority` alphabetically, SQL gives `High → Low → Medium`. That is wrong because `L` comes before `M` in the alphabet — but Medium is more urgent than Low. SQL sees words, not urgency levels. `CASE` lets you secretly replace each word with a number *before* sorting: High=1, Medium=2, Low=3. SQL then sorts 1, 2, 3 — numbers, not letters. Correct order.
 
-**Fix 2 — Queries that need two steps.**
-Every query so far reads from a real table: `FROM tickets`, `FROM employees`. Sometimes a question requires two steps. Example: *"Show me employees who earn above the average salary."* You cannot answer that in one step — first you need to know what the average salary is, then filter against it. A **subquery** does step 1 inside step 2. It is a complete query sitting inside another query, wrapped in parentheses.
+**Problem 2 — questions that need two steps.**
+Some questions cannot be answered in a single pass. *"Show employees who earn above the average salary"* requires: (1) calculate the average, (2) filter using it. But `AVG()` cannot live inside `WHERE` — SQL will throw an error because `WHERE` runs before any aggregation. A **subquery** does step 1 inside step 2. It is a complete SQL query wrapped in parentheses, running first, whose result the outer query uses.
 
-**The data** — `employees` and `performance_reviews` from the checkpoint, with one column added:
+**The data**
 
 ```sql
-ALTER TABLE performance_reviews ADD COLUMN follow_up TEXT;
-UPDATE performance_reviews SET follow_up = 'Urgent' WHERE rating <= 2;
-UPDATE performance_reviews SET follow_up = 'Normal' WHERE rating = 3;
-UPDATE performance_reviews SET follow_up = 'Low'    WHERE rating >= 4;
+-- Employees
+-- E001 Sarah    Engineering 95000 Active
+-- E002 Marcus   Marketing   72000 Active
+-- E003 Priya    Engineering 88000 Active
+-- E004 James    Sales       65000 Inactive
+-- E005 Elena    Marketing   78000 Active
+-- E006 Tom      Sales       70000 Active
+
+-- Performance reviews (with follow_up column added)
+-- R001 E001 rating=4 follow_up='Low'
+-- R002 E003 rating=5 follow_up='Low'
+-- R003 E001 rating=3 follow_up='Normal'
+-- R004 E002 rating=4 follow_up='Low'
+-- R005 E005 rating=2 follow_up='Urgent'
 ```
 
-| emp_id | name | department | salary | status |
-|--------|------|------------|--------|--------|
-| E001 | Sarah | Engineering | 95000 | Active |
-| E002 | Marcus | Marketing | 72000 | Active |
-| E003 | Priya | Engineering | 88000 | Active |
-| E004 | James | Sales | 65000 | Inactive |
-| E005 | Elena | Marketing | 78000 | Active |
-| E006 | Tom | Sales | 70000 | Active |
-
-| review_id | emp_id | rating | follow_up |
-|-----------|--------|--------|-----------|
-| R001 | E001 | 4 | Low |
-| R002 | E003 | 5 | Low |
-| R003 | E001 | 3 | Normal |
-| R004 | E002 | 4 | Low |
-| R005 | E005 | 2 | Urgent |
-
-> 👀 `follow_up` sorts alphabetically as `Low → Normal → Urgent` — completely wrong urgency order. `CASE` fixes this below.
+> 👀 `follow_up` sorts alphabetically as `Low → Normal → Urgent` — completely wrong urgency order. CASE fixes this. Sarah has two reviews (R001 and R003) — this matters for COALESCE.
 
 ---
 
-### 01 · CASE — conditional logic
+### 01 · Simple CASE — map values to new values
 
-> 💬 *"Look at a value. If it matches this, return that. If it matches something else, return something else. Otherwise return a default."*
-
-**Simple CASE** — swap exact values for other values:
+> 💬 *"Look at each row. If the value matches this, replace it with that."*
 
 ```sql
--- Fix the broken sort order
 SELECT review_id, follow_up,
     CASE follow_up
         WHEN 'Urgent' THEN 1
@@ -745,19 +441,24 @@ ORDER BY urgency_rank ASC;
 | R002 | Low | 3 |
 | R004 | Low | 3 |
 
-Elena's review (R005, Urgent) appears first. The alphabetical trap is gone because SQL is sorting 1, 2, 3 — not letters.
+R005 (Elena, Urgent) now appears first. The alphabetical problem is gone because SQL sorted numbers 1, 2, 3 — not letters.
 
 </details>
 
-**Searched CASE** — evaluate a condition in each branch instead of matching one value:
+> ⚠️ **What if a value does not match any WHEN?** If a row has a `follow_up` value you did not list (say someone added `'Critical'`), CASE returns NULL for that row. Add an `ELSE` clause to handle unknowns: `ELSE 99` or `ELSE 'Unknown'`.
+
+---
+
+### 02 · Searched CASE — evaluate conditions per row
+
+> 💬 *"Instead of matching one column against exact values, evaluate any condition in each branch."*
 
 ```sql
--- Assign a salary band label based on salary range
 SELECT name, salary,
     CASE
         WHEN salary >= 90000 THEN 'Senior'
         WHEN salary >= 70000 THEN 'Mid'
-        ELSE                      'Junior'
+        ELSE 'Junior'
     END AS salary_band
 FROM employees;
 ```
@@ -775,39 +476,53 @@ FROM employees;
 | Elena | 78000 | Mid |
 | Tom | 70000 | Mid |
 
-Sarah clears 90,000 so she gets Senior. James falls below 70,000 so he hits the ELSE default.
-
 </details>
 
+> 🔑 **Key learning point — short-circuit evaluation.**
+> CASE checks conditions top-to-bottom and **stops the moment one matches**. Once a row passes `salary >= 90000`, SQL returns `'Senior'` and never checks the next branch. This means every subsequent branch implicitly excludes all previous ones.
+>
+> That is why `WHEN salary >= 70000 THEN 'Mid'` does not need to say `AND salary < 90000` — by the time SQL reaches that branch, it already knows the salary is below 90,000 (because the first branch would have caught it otherwise). Writing the redundant condition is not wrong — but understanding why it is redundant is important.
+
 <details>
-<summary>Simple vs searched CASE — when to use each</summary>
+<summary>Simple CASE vs searched CASE — when to use each</summary>
 <br>
 
-**Simple CASE:** `CASE column WHEN exact_value THEN result` — use when you are mapping a specific list of known values (like priority levels or status codes).
+**Simple CASE** (`CASE column WHEN value THEN result`) — use when you are mapping a specific list of known values to replacements. Clean, readable, limited to exact matching against one column.
 
-**Searched CASE:** `CASE WHEN condition THEN result` — use when you need ranges (salary bands), comparisons against another column, or any boolean expression. More flexible.
+**Searched CASE** (`CASE WHEN condition THEN result`) — use for ranges, comparisons, or conditions across multiple columns. More flexible.
+
+Most real-world analytics work uses searched CASE.
 
 </details>
 
 ---
 
-### 02 · Subqueries in WHERE
+### 03 · Subqueries in WHERE — the problem first
 
-> 💬 *"Answer a small question inside a bigger question. The inner query runs first. Its result becomes the filter for the outer query."*
+> 💬 *"Some filters require knowing a calculated value first. Subqueries calculate it inside the query."*
+
+**The error that explains why subqueries exist:**
 
 ```sql
--- Employees earning above the company average salary
+SELECT name, salary FROM employees
+WHERE salary > AVG(salary);
+-- Error: WHERE clause cannot contain aggregates!
+```
+
+SQL is telling you: `WHERE` runs **before** any aggregation happens. At the moment `WHERE` is evaluated, `AVG(salary)` has not been calculated yet — it does not exist. You cannot filter using a value that does not exist yet.
+
+A subquery solves this by calculating the value separately first:
+
+```sql
 SELECT name, salary
 FROM employees
 WHERE salary > (SELECT AVG(salary) FROM employees);
 ```
 
 **What SQL does, step by step:**
-1. Runs `SELECT AVG(salary) FROM employees` → gets 78,000 (the average)
-2. Substitutes that number: `WHERE salary > 78000`
-3. Filters `employees` and returns anyone above that threshold
-
-You never need to know the average in advance. The subquery calculates it fresh every time the query runs.
+1. Runs `SELECT AVG(salary) FROM employees` → gets a single number: **78,000**
+2. Substitutes it: `WHERE salary > 78000`
+3. Filters `employees` and returns matching rows
 
 <details>
 <summary>What this returns</summary>
@@ -818,100 +533,135 @@ You never need to know the average in advance. The subquery calculates it fresh 
 | Sarah | 95000 |
 | Priya | 88000 |
 
-Marcus (72,000), James (65,000), Elena (78,000), Tom (70,000) all fall at or below 78,000 average and are filtered out. Elena is exactly at the average — `>` is strict, not `>=`.
+Average = (95000+72000+88000+65000+78000+70000) / 6 = 78,000. Sarah and Priya are above it. Marcus, Elena, Tom are at or below. James is below.
+
+Note: Elena (78,000) is exactly at the average. `>` is strict — she does not qualify.
 
 </details>
 
+**IN (subquery) — when the inner query returns a list:**
+
 ```sql
--- Employees who have received an 'Urgent' follow-up review
 SELECT name, department
 FROM employees
 WHERE emp_id IN (
-    SELECT emp_id
-    FROM performance_reviews
+    SELECT emp_id FROM performance_reviews
     WHERE follow_up = 'Urgent'
 );
 ```
 
-The inner query returns a list: `['E005']`. The outer query then checks: is each employee's `emp_id` in that list?
-
-<details>
-<summary>IN (subquery) vs > (subquery) — when to use each</summary>
-<br>
-
-`> (subquery)` — the inner query must return **exactly one value** (a single number). Works with `AVG()`, `MAX()`, `MIN()`, `COUNT()`.
-
-`IN (subquery)` — the inner query returns a **list of values**. The outer query checks whether each row's column appears anywhere in that list. Use `IN` when the inner query might return many rows.
-
-</details>
-
----
-
-### 03 · Subqueries in FROM
-
-> 💬 *"Run a query. Then treat its result as if it were a real table. Run another query on top of that."*
-
-This solves a specific problem: `WHERE` cannot filter on aggregated results. But a subquery in `FROM` can pre-aggregate first, and then an outer `WHERE` filters the result.
-
-```sql
--- Departments where the average review rating is 4 or above
-SELECT dept_summary.department,
-       dept_summary.avg_rating
-FROM (
-    SELECT e.department,
-           AVG(pr.rating) AS avg_rating
-    FROM employees AS e
-    INNER JOIN performance_reviews AS pr
-        ON e.emp_id = pr.emp_id
-    GROUP BY e.department
-) AS dept_summary
-WHERE dept_summary.avg_rating >= 4;
-```
-
-**What SQL does:**
-1. Runs the inner query — produces a temporary table with one row per department showing its average rating. This temporary result is called a **derived table**.
-2. Names it `dept_summary` (the alias after the closing parenthesis)
-3. The outer query treats `dept_summary` exactly like a real table and filters it with `WHERE`
+**Step by step:**
+1. Inner query runs: `SELECT emp_id FROM performance_reviews WHERE follow_up = 'Urgent'` → returns `['E005']`
+2. Outer query: `WHERE emp_id IN ('E005')` → keeps only Elena
 
 <details>
 <summary>What this returns</summary>
 <br>
 
-The inner query produces:
+| name | department |
+|------|------------|
+| Elena | Marketing |
 
-| department | avg_rating |
-|------------|-----------|
-| Engineering | 4.5 |
-| Marketing | 3.0 |
-
-Then the outer `WHERE avg_rating >= 4` removes Marketing (3.0). Final result:
-
-| department | avg_rating |
-|------------|-----------|
-| Engineering | 4.5 |
+Elena (E005) is the only employee with an Urgent review (R005, rating 2).
 
 </details>
 
-> 💡 This pattern — subquery in FROM — is the direct predecessor of **CTEs** (`WITH` clauses), which are the modern, cleaner version of the same idea. CTEs are covered in Lesson 05. Learn the subquery version first so CTEs make immediate sense when you see them.
+> 🔑 **Key learning point — `>` vs `IN`.**
+>
+> `> (subquery)` — the inner query must return **exactly one value**. Use with `AVG()`, `MAX()`, `MIN()`, `COUNT()`. If the inner query returns more than one row, SQL throws an error.
+>
+> `IN (subquery)` — the inner query returns a **list of values**. The outer query checks if each row's column appears anywhere in that list. Use when the inner query might return many rows.
+
+<details>
+<summary>⚠️ Common mistake — subquery returns multiple rows with ></summary>
+<br>
+
+```sql
+-- This will ERROR if the subquery returns more than one row
+WHERE salary > (SELECT salary FROM employees WHERE department = 'Engineering')
+-- Engineering has Sarah (95000) AND Priya (88000) — two rows — error
+
+-- Fix: use a specific aggregate
+WHERE salary > (SELECT MAX(salary) FROM employees WHERE department = 'Engineering')
+-- Now the inner query returns exactly one value: 95000
+```
+
+</details>
 
 ---
 
-### 04 · COALESCE — replacing NULLs in output
+### 04 · Subqueries in FROM — using a query as a table
 
-> 💬 *"Give me the first non-NULL value from this list. Use it to swap out NULLs for something readable."*
-
-NULL values in output are ugly and confusing to non-technical readers. COALESCE lets you replace them with a meaningful default.
+> 💬 *"Run an inner query. Name its result. Then run an outer query on top of that named result."*
 
 ```sql
--- Show review status for all employees, including those never reviewed
+SELECT dept_summary.department, dept_summary.avg_salary
+FROM (
+    SELECT department, AVG(salary) AS avg_salary
+    FROM employees
+    GROUP BY department
+) AS dept_summary
+WHERE dept_summary.avg_salary > 75000;
+```
+
+**What SQL does, step by step:**
+1. Runs the inner query — produces a temporary table called `dept_summary`:
+
+| department | avg_salary |
+|------------|-----------|
+| Engineering | 91500.0 |
+| Marketing | 75000.0 |
+| Sales | 67500.0 |
+
+2. The outer query reads from `dept_summary` and filters: `WHERE avg_salary > 75000`
+3. Marketing (exactly 75,000) and Sales (67,500) are removed. Only Engineering remains.
+
+<details>
+<summary>What this returns</summary>
+<br>
+
+| department | avg_salary |
+|------------|-----------|
+| Engineering | 91500.0 |
+
+</details>
+
+> 🔑 **Key learning point — the alias is NOT optional.**
+>
+> ```sql
+> FROM (SELECT department, AVG(salary) FROM employees GROUP BY department)
+> -- Error: subquery in FROM must have an alias
+>
+> FROM (SELECT department, AVG(salary) FROM employees GROUP BY department) AS dept_summary
+> -- ✓ correct
+> ```
+>
+> SQL needs a name for the temporary result so the outer query can reference its columns. Forget the alias and SQL throws an error immediately.
+
+> 🔑 **Key learning point — FROM subquery vs HAVING.**
+>
+> For simple cases like this one, `HAVING` works just as well:
+> ```sql
+> SELECT department, AVG(salary) AS avg_salary FROM employees
+> GROUP BY department HAVING AVG(salary) > 75000;
+> ```
+>
+> A FROM subquery becomes necessary when you need to **join the aggregated result to another table**, **apply LIMIT to groups**, or **reference the aggregated column more than once**. HAVING cannot do those things.
+>
+> This pattern is also the direct predecessor of **CTEs** (`WITH` clauses in Lesson 05) — the modern, cleaner way to write the same logic.
+
+---
+
+### 05 · COALESCE — replacing NULLs in output
+
+> 💬 *"Return the first non-NULL value from a list. Use it to make NULL readable."*
+
+```sql
 SELECT e.name,
        COALESCE(CAST(pr.rating AS TEXT), 'No review yet') AS review_status
 FROM employees AS e
-LEFT JOIN performance_reviews AS pr
-    ON e.emp_id = pr.emp_id;
+LEFT JOIN performance_reviews AS pr ON e.emp_id = pr.emp_id;
 ```
-
-`COALESCE(a, b)` returns `a` if `a` is not NULL. If `a` is NULL, it returns `b`. You can pass more than two values — it returns the first non-NULL one it finds.
 
 <details>
 <summary>What this returns</summary>
@@ -919,29 +669,37 @@ LEFT JOIN performance_reviews AS pr
 
 | name | review_status |
 |------|--------------|
+| Sarah | 3 |
 | Sarah | 4 |
 | Marcus | 4 |
 | Priya | 5 |
-| James | No review yet |
 | Elena | 2 |
+| James | No review yet |
 | Tom | No review yet |
 
-James and Tom have no matching row in `performance_reviews`. The LEFT JOIN gives them NULL. COALESCE swaps that NULL for the string `'No review yet'`.
-
-Note: `CAST(pr.rating AS TEXT)` converts the integer rating to text so it matches the data type of the fallback string. You cannot COALESCE a number and a string without converting one first.
+Sarah appears twice — she has two reviews (R001 rating 4 and R003 rating 3). That is correct: LEFT JOIN plus one-to-many = multiple rows. James and Tom have no reviews so COALESCE replaces their NULL with `'No review yet'`.
 
 </details>
 
-<details>
-<summary>COALESCE vs IS NULL — they solve different problems</summary>
-<br>
+> 🔑 **Key learning point — COALESCE requires matching data types.**
+>
+> `rating` is an integer. `'No review yet'` is text. You cannot COALESCE different types — SQL does not know how to combine them:
+>
+> ```sql
+> COALESCE(pr.rating, 'No review yet')  -- Error: cannot combine integer and text
+>
+> COALESCE(CAST(pr.rating AS TEXT), 'No review yet')  -- ✓ both are now text
+> ```
+>
+> `CAST(pr.rating AS TEXT)` converts the integer to text first. Then COALESCE has two text values and works correctly.
 
-`IS NULL` belongs in `WHERE` — it **filters rows** based on whether a value is missing.
-`COALESCE` belongs in `SELECT` — it **replaces NULL with a default** in the output you show.
-
-They are not interchangeable. One removes rows. One transforms what you see.
-
-</details>
+> 🔑 **Key learning point — COALESCE vs IS NULL.**
+>
+> `IS NULL` belongs in `WHERE` — it **removes or keeps rows** based on whether a value is missing.
+>
+> `COALESCE` belongs in `SELECT` — it **replaces NULL with a default** in what you show. It does not affect which rows appear.
+>
+> They solve completely different problems. Confusing them is one of the most common early mistakes.
 
 ---
 
@@ -950,35 +708,52 @@ They are not interchangeable. One removes rows. One transforms what you see.
 <br>
 
 <details>
-<summary>Q1 · What is the difference between simple and searched CASE?</summary>
+<summary>Q1 · What is CASE short-circuit evaluation?</summary>
 <br>
 
-Simple CASE: `CASE column WHEN value THEN result` — matches one column against a list of exact values. Use for category mapping.
-Searched CASE: `CASE WHEN condition THEN result` — evaluates any boolean condition per row. Use for ranges or complex logic.
+CASE checks branches top-to-bottom and stops at the first match. Every branch after a match is skipped entirely. This means later branches implicitly exclude all values that earlier branches already captured — so you do not need to write `AND salary < 90000` in a branch that follows `WHEN salary >= 90000`.
 
 </details>
 
 <details>
-<summary>Q2 · Why can't you write WHERE AVG(rating) >= 4 directly?</summary>
+<summary>Q2 · Why does WHERE salary > AVG(salary) throw an error?</summary>
 <br>
 
-`WHERE` runs before `GROUP BY` — so `AVG(rating)` has not been calculated yet when `WHERE` executes. Use `HAVING` to filter after aggregation, or a subquery in `FROM` to pre-aggregate and then filter in an outer `WHERE`.
+`WHERE` runs before any aggregation. At the moment WHERE executes, `AVG(salary)` has not been calculated yet — it does not exist. Use a subquery: `WHERE salary > (SELECT AVG(salary) FROM employees)`.
 
 </details>
 
 <details>
-<summary>Q3 · What is the difference between IN (subquery) and > (subquery)?</summary>
+<summary>Q3 · When do you use > (subquery) vs IN (subquery)?</summary>
 <br>
 
-`> (subquery)` — inner query must return exactly one value. `IN (subquery)` — inner query returns a list; the outer query checks whether each row's column appears in that list.
+`> (subquery)` — inner query must return exactly one value. Use with AVG(), MAX(), MIN(), COUNT().
+
+`IN (subquery)` — inner query returns a list. Outer query checks if its column appears in that list.
 
 </details>
 
 <details>
-<summary>Q4 · When do you use COALESCE vs IS NULL?</summary>
+<summary>Q4 · What happens if you forget the alias on a FROM subquery?</summary>
 <br>
 
-`IS NULL` in `WHERE` filters rows. `COALESCE` in `SELECT` replaces NULL with a default value in output. Different tools solving different problems.
+SQL throws an error immediately. The alias is mandatory — SQL needs a name to reference the temporary table's columns in the outer query.
+
+</details>
+
+<details>
+<summary>Q5 · COALESCE(pr.rating, 'No review yet') throws an error. Why, and how do you fix it?</summary>
+<br>
+
+`rating` is an integer and `'No review yet'` is text — mismatched types. COALESCE cannot combine them. Fix: `COALESCE(CAST(pr.rating AS TEXT), 'No review yet')`.
+
+</details>
+
+<details>
+<summary>Q6 · What is the difference between COALESCE and IS NULL?</summary>
+<br>
+
+`IS NULL` in WHERE — filters rows (keeps or removes them). `COALESCE` in SELECT — replaces NULL with a default in the output without affecting which rows appear.
 
 </details>
 
@@ -994,235 +769,96 @@ Searched CASE: `CASE WHEN condition THEN result` — evaluates any boolean condi
 
 ![](https://img.shields.io/badge/Lesson-04_of_05-586074?style=flat-square)&nbsp;
 ![](https://img.shields.io/badge/Skills-LIKE_·_BETWEEN_·_DISTINCT_·_Dates_·_Strings_·_UNION-2455C3?style=flat-square)&nbsp;
-![](https://img.shields.io/badge/Status-⬜_Upcoming-9AA3B2?style=flat-square)
+![](https://img.shields.io/badge/Status-🟡_In_Progress-E8A020?style=flat-square)
 
 </div>
 
 <br>
 
-These are the concepts that appear in nearly every data analyst interview that Lessons 01–03 do not cover. None of them are complex. All of them are short. Together they fill the gaps between our curriculum and what interviewers at companies like Meta, Google, and Stripe actually test.
-
-**The data** — continuing with `employees` and `performance_reviews` from Lesson 03.
+These are the concepts that appear in nearly every data analyst interview that Lessons 01–03 do not cover. None are complex. All are short. Together they fill the gaps between our curriculum and what interviewers actually test.
 
 ---
 
 ### 01 · LIKE — pattern matching
 
-> 💬 *"`LIKE` filters text values by pattern, not by exact match. Use it when you know part of the value but not all of it."*
-
-Two wildcard characters:
-- `%` — any number of characters (including zero)
-- `_` — exactly one character
+> 💬 *"Filter text by pattern, not exact match. `%` = any characters. `_` = exactly one character."*
 
 ```sql
--- Names that start with the letter S
-SELECT name FROM employees
-WHERE name LIKE 'S%';
--- Returns: Sarah
-
--- Names that end in 'a'
-SELECT name FROM employees
-WHERE name LIKE '%a';
--- Returns: Sarah, Priya, Elena
-
--- Names that are exactly 3 characters long
-SELECT name FROM employees
-WHERE name LIKE '___';
--- Returns: Tom (3 underscores = 3 characters)
-
--- Names containing 'ar' anywhere
-SELECT name FROM employees
-WHERE name LIKE '%ar%';
--- Returns: Sarah, Marcus
+SELECT name FROM employees WHERE name LIKE 'S%';     -- starts with S → Sarah
+SELECT name FROM employees WHERE name LIKE '%a';     -- ends with a → Sarah, Priya, Elena
+SELECT name FROM employees WHERE name LIKE '%ar%';   -- contains ar → Sarah, Marcus
+SELECT name FROM employees WHERE name LIKE '___';    -- exactly 3 chars → Tom
 ```
-
-<details>
-<summary>Real-world use cases for LIKE</summary>
-<br>
-
-- Find all email addresses from a specific domain: `WHERE email LIKE '%@meridian.com'`
-- Find job names that contain a keyword: `WHERE job_name LIKE '%ETL%'`
-- Find ticket IDs that start with INC: `WHERE ticket_id LIKE 'INC%'`
-- Find names with a specific pattern: `WHERE name LIKE 'J_mes'` (matches James, but not James with a different spelling)
-
-Use `ILIKE` instead of `LIKE` in PostgreSQL and DuckDB when you want case-insensitive matching.
-
-</details>
 
 ---
 
 ### 02 · BETWEEN — range filtering
 
-> 💬 *"`BETWEEN` filters rows within a range of values. It is inclusive — both endpoints are included."*
+> 💬 *"Both endpoints are included. `BETWEEN 70000 AND 90000` = `>= 70000 AND <= 90000`."*
 
 ```sql
--- Employees with salary between 70,000 and 90,000
-SELECT name, salary FROM employees
-WHERE salary BETWEEN 70000 AND 90000;
+SELECT name, salary FROM employees WHERE salary BETWEEN 70000 AND 90000;
+-- Returns: Marcus (72k), Priya (88k), Elena (78k), Tom (70k)
+-- Sarah (95k) and James (65k) are excluded
 ```
-
-`BETWEEN 70000 AND 90000` is exactly the same as `>= 70000 AND <= 90000`. Both endpoints are included. Marcus (72,000), Elena (78,000), Tom (70,000), and Priya (88,000) all qualify. Sarah (95,000) and James (65,000) do not.
-
-```sql
--- Reviews submitted in 2024
-SELECT review_id, emp_id, rating FROM performance_reviews
-WHERE review_year BETWEEN 2023 AND 2024;
-```
-
-<details>
-<summary>BETWEEN vs >= AND <= — are they the same?</summary>
-<br>
-
-Yes — they are identical in behaviour. `BETWEEN` is just a cleaner way to write `>= lower AND <= upper`. Use `BETWEEN` when it makes the query easier to read. Use `>= AND <=` when you need different comparison operators on each end (like `> lower AND <= upper`).
-
-</details>
 
 ---
 
 ### 03 · DISTINCT — removing duplicates
 
-> 💬 *"`DISTINCT` removes duplicate rows from your result. Each unique value appears exactly once."*
+> 💬 *"Each unique value appears exactly once."*
 
 ```sql
--- Which departments exist? (without duplicates)
 SELECT DISTINCT department FROM employees;
+-- Returns: Engineering, Marketing, Sales (3 rows instead of 6)
 ```
-
-Without `DISTINCT`, this returns 6 rows (one per employee) with department values repeating. With `DISTINCT`, it returns each department name once.
-
-<details>
-<summary>What this returns</summary>
-<br>
-
-| department |
-|------------|
-| Engineering |
-| Marketing |
-| Sales |
-
-Three rows instead of six. Each department name appears exactly once.
-
-</details>
-
-```sql
--- Which combinations of department and status exist?
-SELECT DISTINCT department, status FROM employees;
-```
-
-When `DISTINCT` is applied to multiple columns, it removes rows where the entire combination of those columns is duplicated — not each column independently.
 
 ---
 
 ### 04 · IN — cleaner list filtering
 
-> 💬 *"`IN` checks whether a value matches any item in a list. It replaces multiple OR conditions."*
+> 💬 *"Replaces multiple OR conditions with a clean list."*
 
 ```sql
--- Employees in Engineering or Marketing
-SELECT name, department FROM employees
-WHERE department IN ('Engineering', 'Marketing');
+SELECT name FROM employees WHERE department IN ('Engineering', 'Marketing');
+-- Same as: WHERE department = 'Engineering' OR department = 'Marketing'
 ```
-
-This is identical to:
-```sql
-WHERE department = 'Engineering' OR department = 'Marketing'
-```
-
-`IN` is cleaner when you have three or more values. Imagine filtering for six different departments — six `OR` conditions versus one `IN` with a list.
-
-```sql
--- Active employees who are either in Sales or have a Junior salary band
-SELECT name FROM employees
-WHERE status = 'Active'
-AND department IN ('Sales', 'Engineering');
-```
-
-> `IN` also works with subqueries: `WHERE emp_id IN (SELECT emp_id FROM ...)` — this was covered in Lesson 03.
 
 ---
 
 ### 05 · Arithmetic & math functions
 
-> 💬 *"Do maths directly inside SQL — add, multiply, round, or take absolute values in a SELECT statement."*
+> 💬 *"Calculate directly inside SQL."*
 
 ```sql
--- Calculate monthly salary from annual salary
-SELECT name, salary,
-       ROUND(salary / 12.0, 2) AS monthly_salary
-FROM employees;
+SELECT name, salary, ROUND(salary / 12.0, 2) AS monthly_salary FROM employees;
+
+SELECT ROUND(7916.67, 1),   -- 7916.7
+       ABS(-42),            -- 42
+       CEILING(3.2),        -- 4  (round up)
+       FLOOR(3.9);          -- 3  (round down)
 ```
-
-`/12.0` (not `/12`) forces decimal division instead of integer division. `ROUND(value, 2)` rounds to 2 decimal places.
-
-```sql
--- Useful math functions
-SELECT
-    ROUND(7916.666, 2),    -- 7916.67  (round to N decimal places)
-    ABS(-42),              -- 42        (remove negative sign)
-    CEILING(3.2),          -- 4         (round UP to nearest integer)
-    FLOOR(3.9),            -- 3         (round DOWN to nearest integer)
-    MOD(17, 5);            -- 2         (remainder after division: 17 ÷ 5 = 3 remainder 2)
-```
-
-<details>
-<summary>When CEILING and FLOOR matter in analytics</summary>
-<br>
-
-**CEILING** is useful when you need to ensure you round up — for example, calculating how many pages of results to show (10 items, 3 per page = CEILING(10/3) = 4 pages).
-
-**FLOOR** is useful when you want the conservative estimate — calculating completed full weeks from days (17 days → FLOOR(17/7) = 2 full weeks).
-
-**MOD** (modulo) is useful for finding even/odd rows, grouping items into buckets of N, or identifying cyclical patterns.
-
-</details>
 
 ---
 
 ### 06 · Date & time functions
 
-> 💬 *"Dates are one of the most common data types in analytics. SQL has built-in functions to extract parts, calculate differences, and truncate dates to useful periods."*
-
-Most real analytics questions involve time: *"How many tickets were raised this month? How long did this job take to recover? What is the week-over-week change in failures?"*
+> 💬 *"Dates are everywhere in analytics. Extract parts, calculate differences, truncate to periods."*
 
 ```sql
--- Get today's date and current timestamp
-SELECT CURRENT_DATE;           -- 2024-06-15
-SELECT CURRENT_TIMESTAMP;      -- 2024-06-15 14:32:00
-
--- Extract specific parts from a date
-SELECT
-    EXTRACT(YEAR  FROM CURRENT_DATE),   -- 2024
-    EXTRACT(MONTH FROM CURRENT_DATE),   -- 6
-    EXTRACT(DAY   FROM CURRENT_DATE);   -- 15
-
--- Calculate the number of days between two dates
-SELECT DATEDIFF('day', '2024-01-01', '2024-06-15');  -- 165 days
-
--- Truncate a date to the start of a period
--- Useful for grouping by month or week
-SELECT DATE_TRUNC('month', '2024-06-15');  -- 2024-06-01
-SELECT DATE_TRUNC('week',  '2024-06-15');  -- 2024-06-10 (start of that week)
-```
-
-```sql
--- Practical example: count reviews per year
-SELECT
-    EXTRACT(YEAR FROM CAST(review_year AS VARCHAR || '-01-01')) AS year,
-    COUNT(*) AS review_count
-FROM performance_reviews
-GROUP BY year
-ORDER BY year;
+SELECT CURRENT_DATE;                                        -- today
+SELECT EXTRACT(YEAR FROM CURRENT_DATE);                    -- 2024
+SELECT DATEDIFF('day', '2024-01-01', '2024-06-15');        -- 165
+SELECT DATE_TRUNC('month', '2024-06-15');                  -- 2024-06-01
 ```
 
 <details>
 <summary>Why DATE_TRUNC is essential for analytics</summary>
 <br>
 
-`DATE_TRUNC('month', date)` converts any date to the first day of its month: `2024-06-15` → `2024-06-01`, `2024-06-28` → `2024-06-01`. Every date in June becomes the same value.
+`DATE_TRUNC('month', date)` converts every date in June to `2024-06-01`. This means `GROUP BY DATE_TRUNC('month', date)` groups all June events into one bucket — regardless of which day they happened. This is how monthly trend reports are built.
 
-This means `GROUP BY DATE_TRUNC('month', created_date)` groups all events from the same calendar month into one bucket — regardless of which day they happened. This is how you produce monthly trend reports.
-
-Without `DATE_TRUNC`, grouping by a full date gives you one row per day, which is rarely what a monthly report needs.
+Without `DATE_TRUNC`, grouping by a raw date gives one row per day.
 
 </details>
 
@@ -1230,100 +866,55 @@ Without `DATE_TRUNC`, grouping by a full date gives you one row per day, which i
 
 ### 07 · String functions
 
-> 💬 *"Clean, reshape, and extract parts of text values stored in your columns."*
+> 💬 *"Clean and reshape text values."*
 
 ```sql
--- Change case
-SELECT UPPER('hello world');           -- HELLO WORLD
-SELECT LOWER('ENGINEERING');           -- engineering
-
--- Count characters
-SELECT LENGTH('Sarah');                -- 5
-
--- Remove leading and trailing spaces (common data quality fix)
-SELECT TRIM('  Sarah  ');              -- 'Sarah'
-
--- Extract a substring (start position, length)
-SELECT SUBSTR('Engineering', 1, 3);   -- 'Eng'
-
--- Replace text
-SELECT REPLACE('Data_Cleanup', '_', ' ');  -- 'Data Cleanup'
-
--- Combine strings (concatenation)
-SELECT name || ' — ' || department AS label
-FROM employees;
--- Returns: 'Sarah — Engineering', 'Marcus — Marketing', etc.
+SELECT UPPER('hello'),         -- HELLO
+       LOWER('WORLD'),         -- world
+       LENGTH('Sarah'),        -- 5
+       TRIM('  Sarah  '),      -- 'Sarah'
+       SUBSTR('Engineering', 1, 3),          -- 'Eng'
+       REPLACE('Data_Cleanup', '_', ' '),    -- 'Data Cleanup'
+       'Hello' || ' ' || 'World';           -- 'Hello World'
 ```
-
-```sql
--- Practical example: clean and standardise department names
-SELECT
-    TRIM(LOWER(department)) AS clean_department,
-    COUNT(*) AS headcount
-FROM employees
-GROUP BY clean_department;
-```
-
-<details>
-<summary>Real data is messy — string functions are how you clean it</summary>
-<br>
-
-Real databases routinely contain: extra spaces from copy-paste (`' Engineering '`), inconsistent casing (`'engineering'` vs `'ENGINEERING'`), concatenated values that need splitting (`'Sarah_Jones'`), and codes that need reformatting.
-
-String functions are the first line of defence in data cleaning. You will use `TRIM`, `LOWER`, `REPLACE`, and `SUBSTR` constantly.
-
-</details>
 
 ---
 
 ### 08 · UNION, INTERSECT, EXCEPT
 
-> 💬 *"Combine or compare the results of two separate queries vertically — stack them, overlap them, or subtract one from the other."*
-
-These operators combine query results row by row, unlike JOINs which combine columns. Both queries must return the same number of columns with compatible data types.
+> 💬 *"Stack results from two queries vertically. Both queries must return the same number of columns."*
 
 ```sql
--- UNION: combine both results, remove duplicates
+-- UNION: combine, remove duplicates
 SELECT name FROM employees WHERE department = 'Engineering'
 UNION
 SELECT name FROM employees WHERE salary > 80000;
--- Returns: Sarah, Priya (deduped — Sarah appears in both but shows once)
-```
 
-```sql
--- UNION ALL: combine both results, KEEP duplicates (faster than UNION)
+-- UNION ALL: combine, keep duplicates (faster)
 SELECT name FROM employees WHERE department = 'Engineering'
 UNION ALL
 SELECT name FROM employees WHERE salary > 80000;
--- Returns: Sarah, Priya, Sarah, Priya (Sarah and Priya appear twice)
-```
 
-```sql
--- INTERSECT: only rows that appear in BOTH queries
+-- INTERSECT: rows in BOTH queries
 SELECT name FROM employees WHERE department = 'Engineering'
 INTERSECT
 SELECT name FROM employees WHERE salary > 80000;
--- Returns: Sarah, Priya (both are in Engineering AND earn above 80k)
-```
 
-```sql
--- EXCEPT: rows in the first query that do NOT appear in the second
-SELECT name FROM employees WHERE department = 'Engineering'
+-- EXCEPT: rows in first but NOT in second
+SELECT name FROM employees WHERE status = 'Active'
 EXCEPT
 SELECT name FROM employees WHERE salary > 80000;
--- Returns: nothing — both Engineering employees earn above 80k
 ```
 
 <details>
-<summary>UNION vs JOIN — they combine data in completely different ways</summary>
+<summary>UNION vs JOIN — completely different operations</summary>
 <br>
 
-**JOIN** adds columns — takes two tables and combines them side by side. The result has more columns.
+**JOIN** adds columns — combines two tables side by side. Result has more columns.
 
-**UNION** stacks rows — takes two query results and stacks them on top of each other. The result has more rows but the same number of columns.
+**UNION** stacks rows — combines two results on top of each other. Result has more rows, same columns.
 
-Use JOIN to combine related data from different tables.
-Use UNION to combine similar data from the same or different sources into one list.
+Use JOIN to combine related data from different tables. Use UNION to merge similar lists from the same or different sources.
 
 </details>
 
@@ -1334,42 +925,34 @@ Use UNION to combine similar data from the same or different sources into one li
 <br>
 
 <details>
-<summary>Q1 · What does % mean in a LIKE pattern? What does _ mean?</summary>
+<summary>Q1 · What does % mean in LIKE? What does _ mean?</summary>
 <br>
 
-`%` matches any number of characters (including zero). `_` matches exactly one character. `'S%'` matches any string starting with S. `'S_rah'` matches Sarah, Surah, Syrah, etc.
+`%` matches any number of characters (including zero). `_` matches exactly one character.
 
 </details>
 
 <details>
-<summary>Q2 · Is BETWEEN 70000 AND 90000 inclusive or exclusive?</summary>
+<summary>Q2 · Is BETWEEN inclusive or exclusive?</summary>
 <br>
 
-Inclusive on both ends. `BETWEEN 70000 AND 90000` is exactly `>= 70000 AND <= 90000`. Both 70,000 and 90,000 qualify.
+Inclusive on both ends. `BETWEEN 70000 AND 90000` = `>= 70000 AND <= 90000`.
 
 </details>
 
 <details>
-<summary>Q3 · What is the difference between UNION and UNION ALL?</summary>
+<summary>Q3 · UNION vs UNION ALL — difference and when to use each?</summary>
 <br>
 
-`UNION` removes duplicate rows from the combined result. `UNION ALL` keeps all rows including duplicates. `UNION ALL` is faster because it skips the deduplication step — use it when you know duplicates will not appear or when duplicates are intentional.
+`UNION` removes duplicate rows. `UNION ALL` keeps them (and is faster). Use `UNION ALL` when duplicates are acceptable or when you know they will not appear.
 
 </details>
 
 <details>
-<summary>Q4 · Why use DATE_TRUNC instead of just grouping by a raw date column?</summary>
+<summary>Q4 · Why use DATE_TRUNC instead of grouping by a raw date?</summary>
 <br>
 
-A raw date like `2024-06-15` is unique per day. Grouping by it gives one row per day. `DATE_TRUNC('month', date)` converts every date in June to `2024-06-01`, so all June rows group together. This is how you produce monthly summaries from daily data.
-
-</details>
-
-<details>
-<summary>Q5 · What does UNION do that JOIN cannot?</summary>
-<br>
-
-UNION stacks rows from two queries on top of each other — the result has more rows, same columns. JOIN combines columns from two tables side by side — the result has more columns. Use UNION to merge similar lists. Use JOIN to combine related tables.
+A raw date is unique per day — grouping produces one row per day. `DATE_TRUNC('month', date)` converts all dates in the same month to the same value, so grouping produces one row per month.
 
 </details>
 
@@ -1409,9 +992,9 @@ UNION stacks rows from two queries on top of each other — the result has more 
 | 2 | `WHERE` | Filter rows before grouping |
 | 3 | `GROUP BY` | Bucket rows into groups |
 | 4 | `HAVING` | Filter groups after grouping |
-| 5 | `SELECT` | Choose columns, calculate expressions |
+| 5 | `SELECT` | Choose columns, run expressions |
 | 6 | `ORDER BY` | Sort the final result |
-| 7 | `LIMIT` | Cap the number of rows returned |
+| 7 | `LIMIT` | Cap rows returned |
 
 </details>
 
@@ -1421,10 +1004,10 @@ UNION stacks rows from two queries on top of each other — the result has more 
 
 | | Type | Returns | NULLs on |
 |---|---|---|---|
-| 🔵 | `INNER JOIN` | Only rows matching in both tables | Neither |
+| 🔵 | `INNER JOIN` | Only matching rows | Neither |
 | 🟢 | `LEFT JOIN` | All left + matching right | Right side |
 | 🟡 | `RIGHT JOIN` | All right + matching left | Left side |
-| 🟣 | `FULL OUTER JOIN` | Everything from both tables | Either side |
+| 🟣 | `FULL OUTER JOIN` | Everything from both | Either side |
 
 </details>
 
@@ -1433,20 +1016,14 @@ UNION stacks rows from two queries on top of each other — the result has more 
 <br>
 
 ```sql
--- Simple CASE (exact value matching)
-CASE column
-    WHEN 'value1' THEN result1
-    WHEN 'value2' THEN result2
-    ELSE           default_result
-END
+-- Simple (exact values)
+CASE column WHEN 'x' THEN 1 WHEN 'y' THEN 2 ELSE 99 END
 
--- Searched CASE (condition matching)
-CASE
-    WHEN condition1 THEN result1
-    WHEN condition2 THEN result2
-    ELSE                 default_result
-END
+-- Searched (conditions)
+CASE WHEN salary >= 90000 THEN 'Senior' WHEN salary >= 70000 THEN 'Mid' ELSE 'Junior' END
 ```
+
+**Remember:** conditions are checked top-to-bottom. First match wins. Always include `ELSE` for unmatched values.
 
 </details>
 
@@ -1455,18 +1032,15 @@ END
 <br>
 
 ```sql
--- In WHERE: single value comparison
+-- WHERE: single value
 WHERE salary > (SELECT AVG(salary) FROM employees)
 
--- In WHERE: list membership check
-WHERE emp_id IN (SELECT emp_id FROM table WHERE condition)
+-- WHERE: list
+WHERE emp_id IN (SELECT emp_id FROM reviews WHERE follow_up = 'Urgent')
 
--- In FROM: derived table (pre-aggregate, then filter)
-SELECT *
-FROM (
-    SELECT department, AVG(salary) AS avg_sal
-    FROM employees
-    GROUP BY department
+-- FROM: derived table (alias is mandatory)
+SELECT * FROM (
+    SELECT department, AVG(salary) AS avg_sal FROM employees GROUP BY department
 ) AS summary
 WHERE summary.avg_sal > 75000
 ```
@@ -1480,28 +1054,30 @@ WHERE summary.avg_sal > 75000
 | Operator | What it does | Example |
 |----------|-------------|---------|
 | `LIKE 'S%'` | Starts with S | `WHERE name LIKE 'S%'` |
-| `LIKE '%ETL%'` | Contains ETL anywhere | `WHERE job_name LIKE '%ETL%'` |
-| `LIKE '___'` | Exactly 3 characters | `WHERE code LIKE '___'` |
+| `LIKE '%ETL%'` | Contains ETL | `WHERE job_name LIKE '%ETL%'` |
 | `BETWEEN a AND b` | Inclusive range | `WHERE salary BETWEEN 70000 AND 90000` |
-| `IN (list)` | Matches any in list | `WHERE dept IN ('Eng', 'Marketing')` |
+| `IN (list)` | Matches any | `WHERE dept IN ('Eng', 'Marketing')` |
 | `DISTINCT` | Remove duplicates | `SELECT DISTINCT department` |
 
 </details>
 
 <details>
-<summary><strong>Common traps</strong></summary>
+<summary><strong>Common traps — full list</strong></summary>
 <br>
 
 | Trap | What happens | Fix |
 |------|-------------|-----|
 | `WHERE x = NULL` | Returns zero rows | Use `IS NULL` |
-| Alphabetical sort on priority | `High → Low → Medium` — wrong order | Use `CASE` to assign numbers |
-| JOIN returns more rows than expected | One-to-many relationship | Check for duplicate keys in the join column |
-| `COUNT(*)` counts NULL rows | Inflated counts | Use `COUNT(column)` to exclude NULLs |
-| `WHERE AVG(x) > n` throws error | WHERE runs before aggregation | Use `HAVING` or a subquery in `FROM` |
-| NULL in SELECT output | Shows as `NULL` or `None` | Use `COALESCE(column, 'default')` |
-| `BETWEEN` missed edge values | Forgot it is inclusive | Both endpoints qualify — `>= AND <=` |
-| UNION slow on large datasets | Deduplication is expensive | Use `UNION ALL` if duplicates are acceptable |
+| `WHERE AVG(x) > n` | Error — aggregate in WHERE | Use `HAVING` or subquery in FROM |
+| Alphabetical sort on categories | Wrong order | Use `CASE` to assign numbers |
+| JOIN returns more rows than expected | One-to-many relationship | Check for duplicate keys |
+| `COUNT(*)` counts NULLs | Inflated counts | Use `COUNT(column)` |
+| FROM subquery without alias | Error | Always add `AS alias_name` |
+| `COALESCE(int, 'text')` | Type mismatch error | `COALESCE(CAST(col AS TEXT), 'text')` |
+| COALESCE vs IS NULL confusion | Wrong tool used | IS NULL filters rows; COALESCE replaces values in output |
+| `> (subquery)` returns multiple rows | Error | Use aggregate: `MAX()`, `AVG()`, etc. |
+| BETWEEN excludes endpoints | Data gaps | BETWEEN is inclusive — both ends qualify |
+| `UNION` is slow | Deduplication overhead | Use `UNION ALL` if duplicates are acceptable |
 
 </details>
 
