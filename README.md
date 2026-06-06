@@ -2,12 +2,13 @@
 
 ![](https://img.shields.io/badge/Role-Analytics_Engineer_in_Training-2455C3?style=flat-square)&nbsp;
 ![](https://img.shields.io/badge/Focus-Remote_|_Data_+_AI-586074?style=flat-square)&nbsp;
-![](https://img.shields.io/badge/Approach-Portfolio_from_Day_One-0C7550?style=flat-square)
+![](https://img.shields.io/badge/Start-June_2026-0C7550?style=flat-square)&nbsp;
+![](https://img.shields.io/badge/Target-October_2026-E8A020?style=flat-square)
 
 # Analytics Engineer Journey
 
-**A structured, self-directed curriculum from SQL foundations to production-ready data pipelines.**
-Every concept applied. Every exercise committed. Every lesson tested before progression.
+*A structured, self-directed curriculum from SQL foundations to production-ready data pipelines.*  
+*Every concept applied. Every exercise committed. Every lesson tested before progression.*
 
 <br>
 
@@ -22,11 +23,13 @@ Every concept applied. Every exercise committed. Every lesson tested before prog
 
 ---
 
-## What is this?
+## About this repository
 
-This repository is the complete record of a career transition into analytics engineering — built in public, from scratch, with no shortcuts.
+This is the complete, public record of a career transition into analytics engineering — built from scratch, with no shortcuts.
 
-The curriculum runs from SQL basics to a full end-to-end data pipeline. Every module ends with a live checkpoint before progression. Every lesson produces committed, commented code. The goal is not certificates — it is a portfolio a hiring manager can actually open and evaluate.
+The curriculum runs from SQL basics to a full end-to-end data pipeline. Every module ends with a live checkpoint before progression. Every lesson produces committed, commented code. Every practice file closes with a written reflection — what went wrong, what clicked, what to carry forward.
+
+**The goal is not certificates.** It is a portfolio a hiring manager can open, run, and evaluate.
 
 **Target role:** Junior Analytics Engineer · Analytics Analyst (remote)
 
@@ -35,8 +38,8 @@ The curriculum runs from SQL basics to a full end-to-end data pipeline. Every mo
 ## Curriculum
 
 | # | Module | Core skills | Status |
-|---|--------|------------|--------|
-| 01 | [SQL Fundamentals](module-01-sql/) | SELECT · WHERE · JOINs · Subqueries · CASE · Window functions | 🟡 In progress |
+|---|--------|-------------|--------|
+| 01 | [SQL Fundamentals](module-01-sql/) | SELECT · JOINs · Subqueries · CASE · Window functions · CTEs | 🟡 In progress |
 | 02 | Python for Data | Variables · pandas · data cleaning · file I/O | ⬜ Upcoming |
 | 03 | Advanced SQL + Data Modeling | Star schema · dimensional modeling · dbt concepts | ⬜ Upcoming |
 | 04 | dbt Core | Models · sources · staging · marts · tests · docs | ⬜ Upcoming |
@@ -46,37 +49,44 @@ The curriculum runs from SQL basics to a full end-to-end data pipeline. Every mo
 
 ## Module 01 — SQL Fundamentals
 
+> *The language every data system speaks. Ask questions, filter answers, summarise data, connect tables.*
+
 <details>
-<summary><strong>Lessons & progress</strong></summary>
+<summary><strong>📋 Lessons & progress</strong></summary>
 <br>
 
-| # | Lesson | Status |
-|---|--------|--------|
-| 01 | SELECT, WHERE, aggregations, ORDER BY, NULL | ✅ Complete |
-| 02 | JOINs — INNER, LEFT, RIGHT, FULL OUTER | ✅ Complete |
-| 03 | Subqueries and CASE statements | 🟡 In progress |
-| 04 | SQL Toolkit — LIKE, BETWEEN, dates, strings, UNION | ⬜ Upcoming |
-| 05 | Window functions and CTEs | ⬜ Upcoming |
+| # | Lesson | Skills covered | Status |
+|---|--------|---------------|--------|
+| 01 | SQL Basics | SELECT · WHERE · GROUP BY · HAVING · ORDER BY · NULL | ✅ Complete |
+| 02 | JOINs | INNER · LEFT · RIGHT · FULL OUTER · NULL pattern | ✅ Complete |
+| 03 | Subqueries & CASE | CASE · WHERE subquery · FROM subquery · COALESCE · CAST | ✅ Complete |
+| 04 | SQL Toolkit | LIKE · BETWEEN · DISTINCT · Dates · Strings · UNION | 🟡 In progress |
+| 05 | Window Functions & CTEs | ROW_NUMBER · RANK · LAG · LEAD · WITH | ⬜ Upcoming |
 
-**Mid-module checkpoint (Lessons 01–02):** ✅ Conditional pass
-**Final checkpoint (all 5 lessons):** ⬜ Upcoming
+| Checkpoint | Coverage | Result |
+|------------|----------|--------|
+| Mid-module checkpoint | Lessons 01–03 | ✅ Passed |
+| Final checkpoint | All 5 lessons | ⬜ Upcoming |
 
 </details>
 
 <details>
-<summary><strong>Files</strong></summary>
+<summary><strong>📁 Files</strong></summary>
 <br>
 
 ```
 module-01-sql/
 ├── lessons/
-│   ├── lesson-01-basics.sql
-│   ├── lesson-02-joins.sql
-│   └── lesson-03-subqueries-case.sql
+│   ├── lesson-01-basics.sql               ✅ SELECT, WHERE, aggregations, NULL
+│   ├── lesson-02-joins.sql                ✅ INNER, LEFT, RIGHT, FULL OUTER
+│   ├── lesson-03-subqueries-case.sql      ✅ CASE, subqueries, COALESCE
+│   └── lesson-04-toolkit.sql             🟡 LIKE, BETWEEN, dates, strings, UNION
 ├── practice/
-│   └── lesson-02-joins-practice.sql
+│   ├── lesson-02-JOINs.sql               ✅ Cold practice — no hints
+│   ├── lesson-03-subqueries-case-practice.sql  ✅ Cold practice — no hints
+│   └── lesson-04-toolkit-practice.sql    🟡 Cold practice — no hints
 ├── checkpoint/
-│   └── checkpoint-module-01-sql-fundamentals.sql
+│   └── checkpoint-module-01-sql-fundamentals.sql  ✅ Passed
 ├── assets/
 └── README.md
 ```
@@ -88,22 +98,22 @@ module-01-sql/
 ## Why analytics engineering?
 
 <details>
-<summary><strong>Read more</strong></summary>
+<summary><strong>The role, the stack, and why this path</strong></summary>
 <br>
 
-Analytics engineers sit between the people who move data (data engineers) and the people who read it (analysts). They take raw, messy data from various systems and write SQL and Python to model it into clean, reliable, structured datasets that business teams can trust.
+Analytics engineers sit at the intersection of data engineering and analytics. They take raw, messy data from operational systems and transform it into clean, reliable, well-documented datasets that business teams can trust and act on.
 
-The role requires systems thinking — understanding not just how to query data, but how it was built, where it came from, and why it breaks. That instinct is what this curriculum is designed to develop.
+The role demands systems thinking — understanding not just how to query data, but where it came from, how it was built, and why it breaks. That instinct is the foundation this curriculum is designed to develop.
 
-**The stack this curriculum builds toward:**
+**Target stack:**
 
-| Tool | What it does |
-|------|-------------|
-| SQL + DuckDB | Query and transform data locally |
-| Python + pandas | Clean, reshape, and pipeline data |
-| dbt | Version-control SQL transformations like code |
-| BigQuery | Run models at cloud scale |
-| Git + GitHub | Track every change, prove every step |
+| Tool | Role in the pipeline |
+|------|---------------------|
+| SQL + DuckDB | Query, transform, and model data locally |
+| Python + pandas | Clean, reshape, and automate data workflows |
+| dbt Core | Version-control SQL transformations like software |
+| BigQuery | Run models at cloud scale in a real warehouse |
+| Git + GitHub | Track every change, prove every step publicly |
 
 </details>
 
@@ -112,16 +122,20 @@ The role requires systems thinking — understanding not just how to query data,
 ## How this works
 
 <details>
-<summary><strong>Curriculum approach</strong></summary>
+<summary><strong>Curriculum principles</strong></summary>
 <br>
 
-**No progression without comprehension.** Every module ends with a live checkpoint — SQL or Python written from scratch, no notes, no AI assistance. Gaps get fixed before the next module starts.
+**No progression without comprehension.**  
+Every module ends with a live checkpoint — SQL or Python written from scratch, no notes, no AI assistance. If there are gaps, they get fixed before the next module begins.
 
-**Portfolio from day one.** Every exercise, every practice file, every checkpoint is committed to this repo with comments explaining the reasoning — not just the code. A hiring manager can open any file and see not just what was written, but why.
+**Portfolio from day one.**  
+Every lesson file, every practice file, every checkpoint is committed with comments explaining the reasoning — not just the code. A hiring manager can open any file and see not just what was written, but why.
 
-**Supplementary resources.** Core teaching happens in this curriculum. For interview drilling, [DataLemur](https://datalemur.com/sql-tutorial) is used in Module 05 — its question bank mirrors real FAANG SQL screens.
+**Reflections in every practice file.**  
+Each practice session closes with a written reflection: what kept going wrong, what clicked, what to carry forward. Written in plain language, not technical jargon. This is the learning record — not the certificate.
 
-**Reflections in every practice file.** At the end of each practice session, a comment block captures what went wrong, what clicked, and what to carry forward. Written in plain language, not technical jargon.
+**Interview preparation is built in.**  
+From Module 05 onward, [DataLemur](https://datalemur.com/sql-tutorial) is used for interview drilling — its question bank mirrors real FAANG and analytics engineering SQL screens.
 
 </details>
 
@@ -130,7 +144,7 @@ The role requires systems thinking — understanding not just how to query data,
 <div align="center">
 
 *Started June 2026 · Target completion October 2026*
-&nbsp;&nbsp;
+
 [github.com/nabiya15](https://github.com/nabiya15)
 
 </div>
