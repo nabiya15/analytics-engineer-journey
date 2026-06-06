@@ -16,7 +16,7 @@
 
 ## Contents
 
-| # | Section |
+| | Section |
 |---|---------|
 | 1 | [Module overview](#module-overview) |
 | 2 | [Lesson 01 — SQL Basics](#lesson-01--sql-basics) |
@@ -25,6 +25,8 @@
 | 5 | [Lesson 04 — SQL Toolkit](#lesson-04--sql-toolkit) |
 | 6 | [Lesson 05 — Window Functions & CTEs](#lesson-05--window-functions--ctes) |
 | 7 | [Quick reference](#quick-reference) |
+
+> 💡 **GitHub tip:** click the **≡** icon at the top-right of this page for a floating table of contents.
 
 ---
 
@@ -43,24 +45,28 @@
 | Mid-module | Lessons 01–03 | ✅ Passed |
 | Final | All 5 lessons | ⬜ Upcoming |
 
-**Files**
+<details>
+<summary>📁 &nbsp;<strong>File listing</strong> &nbsp;— click to expand</summary>
+<br>
 
 ```
 module-01-sql/
 ├── lessons/
-│   ├── lesson-01-basics.sql
-│   ├── lesson-02-joins.sql
-│   ├── lesson-03-subqueries-case.sql
-│   └── lesson-04-toolkit.sql
+│   ├── lesson-01-basics.sql               ✅
+│   ├── lesson-02-joins.sql                ✅
+│   ├── lesson-03-subqueries-case.sql      ✅
+│   └── lesson-04-toolkit.sql             🟡
 ├── practice/
-│   ├── lesson-02-JOINs.sql
-│   ├── lesson-03-subqueries-case-practice.sql
-│   └── lesson-04-toolkit-practice.sql
+│   ├── lesson-02-JOINs.sql               ✅
+│   ├── lesson-03-subqueries-case-practice.sql  ✅
+│   └── lesson-04-toolkit-practice.sql    🟡
 ├── checkpoint/
-│   └── checkpoint-module-01-sql-fundamentals.sql
+│   └── checkpoint-module-01-sql-fundamentals.sql  ✅ Passed
 ├── assets/
 └── README.md
 ```
+
+</details>
 
 <div align="right"><a href="#contents">↑ Back to top</a></div>
 
@@ -76,7 +82,11 @@ module-01-sql/
 
 </div>
 
-**The data** — one table, seven tickets.
+<details>
+<summary>📋 &nbsp;<strong>The dataset</strong> &nbsp;— click to expand</summary>
+<br>
+
+One table, seven tickets.
 
 | ticket_id | type | priority | status | assigned_to | resolution_hours |
 |-----------|------|----------|--------|-------------|-----------------|
@@ -90,6 +100,8 @@ module-01-sql/
 
 > `NULL` in `resolution_hours` = ticket still open. NULL is not zero — it is the complete absence of a value.
 
+</details>
+
 ---
 
 ### SELECT & FROM
@@ -102,12 +114,12 @@ SELECT ticket_id, priority, status FROM tickets; -- specific columns only
 ```
 
 <details>
-<summary>Why column names have no quotes but text values do</summary>
+<summary>💬 &nbsp;<strong>Why column names have no quotes but text values do</strong> &nbsp;— click to expand</summary>
 <br>
 
 `status` is a column name — part of the table structure. `'Open'` is a value — data inside a cell.
 
-Rule: **structure = no quotes · data = single quotes · numbers = no quotes**
+**Rule: structure = no quotes · data = single quotes · numbers = no quotes**
 
 </details>
 
@@ -122,7 +134,7 @@ SELECT * FROM tickets WHERE status = 'Open';
 ```
 
 <details>
-<summary>Combining conditions — AND · OR · !=</summary>
+<summary>💬 &nbsp;<strong>Combining conditions — AND · OR · !=</strong> &nbsp;— click to expand</summary>
 <br>
 
 ```sql
@@ -148,12 +160,12 @@ GROUP BY priority;
 ```
 
 <details>
-<summary>COUNT(*) vs COUNT(column) · Execution order</summary>
+<summary>💬 &nbsp;<strong>COUNT(*) vs COUNT(column) · Execution order</strong> &nbsp;— click to expand</summary>
 <br>
 
 `COUNT(*)` counts all rows including NULLs. `COUNT(column)` skips NULLs.
 
-**Execution order:** `WHERE` → `GROUP BY` → `HAVING` → `SELECT` → `ORDER BY` → `LIMIT`
+**Execution order:** `FROM` → `WHERE` → `GROUP BY` → `HAVING` → `SELECT` → `ORDER BY` → `LIMIT`
 
 </details>
 
@@ -179,14 +191,12 @@ HAVING AVG(resolution_hours) > 5;
 
 ```sql
 SELECT ticket_id, priority, resolution_hours
-FROM tickets
-WHERE status = 'Closed'
-ORDER BY resolution_hours ASC
-LIMIT 2;
+FROM tickets WHERE status = 'Closed'
+ORDER BY resolution_hours ASC LIMIT 2;
 ```
 
 <details>
-<summary>The text-sort trap</summary>
+<summary>⚠️ &nbsp;<strong>The text-sort trap</strong> &nbsp;— click to expand</summary>
 <br>
 
 `ORDER BY priority ASC` gives `High → Low → Medium` — alphabetical, not urgency order. Fix with CASE (covered in Lesson 03).
@@ -206,7 +216,7 @@ SELECT * FROM tickets WHERE resolution_hours IS NULL;
 > ⚠️ `WHERE x = NULL` always returns zero rows. Nothing equals the absence of a value. Always use `IS NULL` or `IS NOT NULL`.
 
 <details>
-<summary>🧠 Lesson 01 — Self-check</summary>
+<summary>🧠 &nbsp;<strong>Lesson 01 Self-check — 3 questions</strong> &nbsp;— click to expand</summary>
 <br>
 
 <details>
@@ -249,7 +259,11 @@ NULL has no value. Nothing equals the absence of a value. Use `IS NULL`.
 
 </div>
 
-**The scenario** — `autosys_jobs` tracks automated task runs. `servicenow_tickets` tracks reported problems. Both share `job_id` — that column is the bridge.
+<details>
+<summary>📋 &nbsp;<strong>The dataset — two tables, one bridge column</strong> &nbsp;— click to expand</summary>
+<br>
+
+`autosys_jobs` tracks automated task runs. `servicenow_tickets` tracks reported problems. Both share `job_id` — that column is the bridge.
 
 | autosys_jobs | | servicenow_tickets |
 |---|---|---|
@@ -259,7 +273,9 @@ NULL has no value. Nothing equals the absence of a value. Use `IS NULL`.
 | JOB004 · Failed | | INC004 · JOB003 · Low |
 | JOB005 · Success | | INC005 · JOB002 · Low |
 
-> JOB001 has **two** tickets. JOB005 has **none**. These two facts drive every JOIN result below.
+> **JOB001 has two tickets. JOB005 has none.** These two facts drive every JOIN result below.
+
+</details>
 
 ---
 
@@ -299,7 +315,7 @@ LEFT JOIN servicenow_tickets AS sn ON aj.job_id = sn.job_id;
 
 ![RIGHT JOIN](assets/venn-right.svg)
 
-Every RIGHT JOIN can be rewritten as a LEFT JOIN by swapping table order. Always use LEFT JOIN in practice — it reads more naturally.
+Every RIGHT JOIN can be rewritten as a LEFT JOIN by swapping table order. Always use LEFT JOIN in practice.
 
 ---
 
@@ -332,7 +348,7 @@ WHERE sn.job_id IS NULL;
 > ⚠️ Always check `IS NULL` on the **JOIN key**, not a data column. Data columns can have legitimate NULLs.
 
 <details>
-<summary>🧠 Lesson 02 — Self-check</summary>
+<summary>🧠 &nbsp;<strong>Lesson 02 Self-check — 3 questions</strong> &nbsp;— click to expand</summary>
 <br>
 
 <details>
@@ -375,13 +391,17 @@ JOB001 matched two rows in servicenow_tickets. One job × two tickets = two outp
 
 </div>
 
-**What this lesson solves:**
+<details>
+<summary>📋 &nbsp;<strong>What this lesson solves + dataset</strong> &nbsp;— click to expand</summary>
+<br>
 
-- **Broken sort order** — SQL sorts `priority` alphabetically: `High → Low → Medium`. CASE reassigns values to numbers before sorting.
-- **Two-step questions** — *"Show employees above average salary"* requires calculating the average first. `WHERE` runs before aggregation — so you can't use `AVG()` inside `WHERE`. A subquery does step one inside step two.
+**Problem 1 — broken sort order.**
+SQL sorts `priority` alphabetically: `High → Low → Medium`. CASE reassigns values to numbers before sorting.
 
-**The data**
+**Problem 2 — two-step questions.**
+*"Show employees above average salary"* requires calculating the average first. `WHERE` runs before aggregation — so `AVG()` inside `WHERE` throws an error. A subquery does step one inside step two.
 
+**The data:**
 ```
 employees                              performance_reviews (with follow_up)
 E001 · Sarah    · Engineering · 95000  R001 · E001 · rating 4 · Low
@@ -391,6 +411,8 @@ E004 · James    · Sales       · 65000  R004 · E002 · rating 4 · Low
 E005 · Elena    · Marketing   · 78000  R005 · E005 · rating 2 · Urgent
 E006 · Tom      · Sales       · 70000
 ```
+
+</details>
 
 ---
 
@@ -427,15 +449,23 @@ SELECT name, salary,
 FROM employees;
 ```
 
-> 🔑 **Short-circuit evaluation** — CASE checks top-to-bottom and stops at the first match. `WHEN salary >= 70000` doesn't need `AND salary < 90000` — anything reaching that branch already failed the first condition.
-
 <details>
-<summary>Simple CASE vs searched CASE — when to use each</summary>
+<summary>💬 &nbsp;<strong>Short-circuit evaluation — why later branches don't need AND</strong> &nbsp;— click to expand</summary>
 <br>
 
-**Simple CASE** — mapping a known list of exact values. Clean and readable.
+CASE checks top-to-bottom and **stops at the first match**. Once a row passes `salary >= 90000`, SQL returns `'Senior'` and moves on. Every branch after that implicitly excludes values that earlier branches already caught.
 
-**Searched CASE** — ranges, comparisons, or conditions across multiple columns. More flexible. Most real-world analytics work uses this form.
+`WHEN salary >= 70000 THEN 'Mid'` doesn't need `AND salary < 90000` — by the time SQL reaches that branch, the salary is already known to be below 90,000.
+
+</details>
+
+<details>
+<summary>💬 &nbsp;<strong>Simple CASE vs searched CASE — when to use each</strong> &nbsp;— click to expand</summary>
+<br>
+
+**Simple CASE** (`CASE column WHEN value`) — mapping a known list of exact values. Clean and readable.
+
+**Searched CASE** (`CASE WHEN condition`) — ranges, comparisons, or conditions across multiple columns. More flexible. Most real-world analytics work uses this form.
 
 </details>
 
@@ -457,15 +487,29 @@ WHERE salary > (SELECT AVG(salary) FROM employees);
 
 ```sql
 -- IN (subquery) — when the inner query returns a list:
-SELECT name, department
-FROM employees
+SELECT name, department FROM employees
 WHERE emp_id IN (
     SELECT emp_id FROM performance_reviews WHERE follow_up = 'Urgent'
 );
 ```
 
-> 🔑 `> (subquery)` — inner query must return **one value**. Use with AVG(), MAX(), MIN().  
-> 🔑 `IN (subquery)` — inner query returns a **list**. Outer query checks membership.
+> 🔑 `> (subquery)` — inner must return **one value**. Use with `AVG()`, `MAX()`, `MIN()`.  
+> 🔑 `IN (subquery)` — inner returns a **list**. Outer checks membership.
+
+<details>
+<summary>⚠️ &nbsp;<strong>Common mistake — subquery returns multiple rows with &gt;</strong> &nbsp;— click to expand</summary>
+<br>
+
+```sql
+-- Errors if subquery returns more than one row:
+WHERE salary > (SELECT salary FROM employees WHERE department = 'Engineering')
+-- Engineering has Sarah AND Priya — two rows — error.
+
+-- Fix: use a specific aggregate:
+WHERE salary > (SELECT MAX(salary) FROM employees WHERE department = 'Engineering')
+```
+
+</details>
 
 ---
 
@@ -485,7 +529,7 @@ WHERE dept_summary.avg_salary > 75000;
 
 > ⚠️ The alias (`AS dept_summary`) is **mandatory**. SQL needs a name for the temporary result. Omit it and SQL throws an error immediately.
 
-> 🔑 This pattern is the direct predecessor of **CTEs** — covered in Lesson 05.
+> 🔑 This pattern is the direct predecessor of **CTEs** (`WITH` clauses) — covered in Lesson 05.
 
 ---
 
@@ -500,20 +544,22 @@ FROM employees AS e
 LEFT JOIN performance_reviews AS pr ON e.emp_id = pr.emp_id;
 ```
 
-> ⚠️ Types must match. `rating` is INTEGER, `'No review yet'` is TEXT. `CAST(rating AS TEXT)` converts first, then COALESCE has two compatible types.
+> ⚠️ Types must match. `CAST(rating AS TEXT)` converts the integer first — then COALESCE has two compatible types.
 
 <details>
-<summary>COALESCE vs IS NULL — different tools for different problems</summary>
+<summary>💬 &nbsp;<strong>COALESCE vs IS NULL — different tools, different jobs</strong> &nbsp;— click to expand</summary>
 <br>
 
-`IS NULL` in WHERE → **filters rows** (keeps or removes them)
+`IS NULL` in `WHERE` → **filters rows** (keeps or removes them based on whether a value is missing)
 
-`COALESCE` in SELECT → **replaces NULL with a default** in the output, without affecting which rows appear
+`COALESCE` in `SELECT` → **replaces NULL with a default** in the output, without affecting which rows appear
+
+Confusing these is one of the most common early mistakes.
 
 </details>
 
 <details>
-<summary>🧠 Lesson 03 — Self-check</summary>
+<summary>🧠 &nbsp;<strong>Lesson 03 Self-check — 5 questions</strong> &nbsp;— click to expand</summary>
 <br>
 
 <details>
@@ -528,7 +574,7 @@ CASE checks branches top-to-bottom and stops at the first match. Later branches 
 <summary>Q2 · Why does WHERE salary > AVG(salary) throw an error?</summary>
 <br>
 
-WHERE runs before aggregation. At the moment WHERE executes, AVG(salary) doesn't exist yet. Use a subquery: `WHERE salary > (SELECT AVG(salary) FROM employees)`.
+WHERE runs before aggregation. AVG(salary) doesn't exist yet at that point. Fix: `WHERE salary > (SELECT AVG(salary) FROM employees)`.
 
 </details>
 
@@ -536,7 +582,7 @@ WHERE runs before aggregation. At the moment WHERE executes, AVG(salary) doesn't
 <summary>Q3 · When do you use > (subquery) vs IN (subquery)?</summary>
 <br>
 
-`> (subquery)` — inner must return exactly one value. Use with aggregate functions.  
+`> (subquery)` — inner must return exactly one value. Use with aggregate functions.
 `IN (subquery)` — inner returns a list. Outer checks if its column appears in that list.
 
 </details>
@@ -573,7 +619,7 @@ Type mismatch — INTEGER and TEXT. Fix: `COALESCE(CAST(pr.rating AS TEXT), 'No 
 
 </div>
 
-Operators and functions that appear in nearly every analytics interview and real-world query — filling the gaps between Lessons 01–03 and what the job requires daily.
+Operators and functions that appear in nearly every analytics interview and real-world query — filling the gaps Lessons 01–03 leave open.
 
 ---
 
@@ -588,7 +634,7 @@ SELECT name FROM employees WHERE name LIKE '%ar%';  -- contains 'ar'
 SELECT name FROM employees WHERE name LIKE '___';   -- exactly 3 characters
 ```
 
-> ⚠️ LIKE is case-sensitive. `'sarah' LIKE 'S%'` → no match. Normalise with `LOWER()` first.
+> ⚠️ LIKE is case-sensitive. `'sarah' LIKE 'S%'` → no match. Normalise first: `LOWER(name) LIKE 's%'`.
 
 ---
 
@@ -620,7 +666,7 @@ SELECT name, salary, ROUND(salary / 12.0, 2) AS monthly_salary FROM employees;
 SELECT ROUND(7916.67, 1), ABS(-42), CEILING(3.2), FLOOR(3.9);
 ```
 
-> ⚠️ `salary / 12` (integer division) truncates decimals. Use `salary / 12.0` to preserve them.
+> ⚠️ `salary / 12` truncates to integer. Use `salary / 12.0` to preserve decimals.
 
 ---
 
@@ -633,7 +679,15 @@ SELECT DATEDIFF('day', DATE '2024-01-01', DATE '2024-06-15');  -- 165
 SELECT DATE_TRUNC('month', DATE '2024-06-15');                 -- 2024-06-01
 ```
 
-> 🔑 `DATE_TRUNC('month', created_at)` converts every date in June to `2024-06-01`. `GROUP BY DATE_TRUNC('month', created_at)` then gives one row per month — not one row per day. This is how monthly trend reports are built.
+<details>
+<summary>💬 &nbsp;<strong>Why DATE_TRUNC is essential for analytics</strong> &nbsp;— click to expand</summary>
+<br>
+
+`DATE_TRUNC('month', created_at)` converts every date in June to `2024-06-01`. Now `GROUP BY DATE_TRUNC('month', created_at)` gives one row per month — not one row per day. This is how monthly trend reports are built.
+
+Without `DATE_TRUNC`, grouping by a raw date gives one row per exact day.
+
+</details>
 
 ---
 
@@ -661,12 +715,12 @@ SELECT name FROM employees WHERE department = 'Engineering'
 UNION
 SELECT name FROM employees WHERE salary > 80000;
 
--- UNION ALL: combine, keep duplicates (faster)
+-- UNION ALL: combine, keep duplicates (faster — skips dedup)
 SELECT name FROM employees WHERE department = 'Engineering'
 UNION ALL
 SELECT name FROM employees WHERE salary > 80000;
 
--- INTERSECT: rows in BOTH queries
+-- INTERSECT: rows appearing in BOTH queries
 SELECT name FROM employees WHERE department = 'Engineering'
 INTERSECT
 SELECT name FROM employees WHERE salary > 80000;
@@ -677,11 +731,20 @@ EXCEPT
 SELECT name FROM employees WHERE salary > 80000;
 ```
 
-> 🔑 **UNION vs JOIN** — completely different operations.  
-> JOIN adds **columns** (tables side by side). UNION adds **rows** (results stacked).
+<details>
+<summary>💬 &nbsp;<strong>UNION vs JOIN — completely different operations</strong> &nbsp;— click to expand</summary>
+<br>
+
+**JOIN** adds **columns** — combines tables side by side. Result has more columns.
+
+**UNION** adds **rows** — stacks results on top of each other. Result has more rows, same columns.
+
+Use JOIN to combine related data from different tables. Use UNION to merge similar lists from the same or different sources.
+
+</details>
 
 <details>
-<summary>🧠 Lesson 04 — Self-check</summary>
+<summary>🧠 &nbsp;<strong>Lesson 04 Self-check — 4 questions</strong> &nbsp;— click to expand</summary>
 <br>
 
 <details>
@@ -704,7 +767,7 @@ Inclusive on both ends. `BETWEEN 70000 AND 90000` = `>= 70000 AND <= 90000`.
 <summary>Q3 · UNION vs UNION ALL — when to use each?</summary>
 <br>
 
-`UNION` removes duplicates (slower). `UNION ALL` keeps them (faster). Use `UNION ALL` when duplicates are acceptable or impossible — it skips the expensive deduplication step.
+`UNION` removes duplicates (slower). `UNION ALL` keeps them (faster). Use `UNION ALL` when duplicates are acceptable — it skips the deduplication step entirely.
 
 </details>
 
@@ -741,7 +804,7 @@ A raw date is unique per day — grouping gives one row per day. `DATE_TRUNC('mo
 ## Quick reference
 
 <details>
-<summary><strong>Clause execution order</strong></summary>
+<summary>📌 &nbsp;<strong>Clause execution order</strong> &nbsp;— click to expand</summary>
 <br>
 
 | Order | Clause | Does what |
@@ -757,7 +820,7 @@ A raw date is unique per day — grouping gives one row per day. `DATE_TRUNC('mo
 </details>
 
 <details>
-<summary><strong>JOIN types at a glance</strong></summary>
+<summary>📌 &nbsp;<strong>JOIN types at a glance</strong> &nbsp;— click to expand</summary>
 <br>
 
 | Type | Returns | NULLs on |
@@ -770,7 +833,7 @@ A raw date is unique per day — grouping gives one row per day. `DATE_TRUNC('mo
 </details>
 
 <details>
-<summary><strong>CASE syntax</strong></summary>
+<summary>📌 &nbsp;<strong>CASE syntax</strong> &nbsp;— click to expand</summary>
 <br>
 
 ```sql
@@ -789,7 +852,7 @@ Conditions check top-to-bottom. First match wins. Always include `ELSE`.
 </details>
 
 <details>
-<summary><strong>Subquery patterns</strong></summary>
+<summary>📌 &nbsp;<strong>Subquery patterns</strong> &nbsp;— click to expand</summary>
 <br>
 
 ```sql
@@ -810,7 +873,7 @@ WHERE summary.avg_sal > 75000
 </details>
 
 <details>
-<summary><strong>Common traps</strong></summary>
+<summary>📌 &nbsp;<strong>Common traps — full list</strong> &nbsp;— click to expand</summary>
 <br>
 
 | Trap | Symptom | Fix |

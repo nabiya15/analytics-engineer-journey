@@ -1,11 +1,44 @@
-<svg viewBox="0 0 300 138" xmlns="http://www.w3.org/2000/svg" width="300" height="138">
-  <rect width="300" height="138" fill="#FAFAF8" rx="8"/>
-  <circle cx="105" cy="72" r="52" fill="#BFDBFE" stroke="#2455C3" stroke-width="2"/>
-  <circle cx="195" cy="72" r="52" fill="#BFDBFE" stroke="#2455C3" stroke-width="2"/>
-  <ellipse cx="150" cy="72" rx="28" ry="47" fill="#2455C3"/>
-  <text x="68" y="16" font-size="10.5" fill="#1D4ED8" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="600">autosys_jobs</text>
-  <text x="232" y="16" font-size="10.5" fill="#1D4ED8" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="600">servicenow_tickets</text>
-  <text x="72" y="78" font-size="10" fill="#1D4ED8" text-anchor="middle" font-family="system-ui,sans-serif">✓ all rows</text>
-  <text x="228" y="78" font-size="10" fill="#1D4ED8" text-anchor="middle" font-family="system-ui,sans-serif">✓ all rows</text>
-  <text x="150" y="130" font-size="10" fill="#6B7280" text-anchor="middle" font-family="system-ui,sans-serif">Every row from both tables · NULLs where no match exists</text>
+<svg viewBox="0 0 460 188" xmlns="http://www.w3.org/2000/svg" width="460" height="188">
+
+  <!-- Card background -->
+  <rect width="460" height="188" fill="#FFFFFF" rx="12" stroke="#E2E8F0" stroke-width="1.5"/>
+
+  <!-- Coloured header strip -->
+  <rect width="460" height="34" fill="#B45309" rx="12"/>
+  <rect y="22" width="460" height="12" fill="#B45309"/>
+
+  <!-- JOIN type label -->
+  <text x="18" y="22" font-size="12" fill="#FFFFFF" font-family="system-ui,-apple-system,sans-serif" font-weight="700" letter-spacing="0.4">FULL OUTER JOIN</text>
+
+  <!-- Row-count badge -->
+  <rect x="368" y="9" width="74" height="18" fill="rgba(255,255,255,0.18)" rx="9"/>
+  <text x="405" y="21" font-size="9.5" fill="#FFFFFF" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="600">all rows</text>
+
+  <!-- Table name labels -->
+  <text x="152" y="52" font-size="9.5" fill="#92400E" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="600">autosys_jobs</text>
+  <text x="308" y="52" font-size="9.5" fill="#92400E" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="600">servicenow_tickets</text>
+
+  <!-- Both circles (amber — everything returned) -->
+  <circle cx="180" cy="103" r="70" fill="#FEF3C7" stroke="#FCD34D" stroke-width="2"/>
+  <circle cx="280" cy="103" r="70" fill="#FEF3C7" stroke="#FCD34D" stroke-width="2"/>
+
+  <!-- Re-draw borders on top -->
+  <circle cx="180" cy="103" r="70" fill="none" stroke="#F59E0B" stroke-width="2"/>
+  <circle cx="280" cy="103" r="70" fill="none" stroke="#F59E0B" stroke-width="2"/>
+
+  <!-- Left label -->
+  <text x="130" y="99" font-size="9" fill="#92400E" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="600">✓ all rows</text>
+  <text x="130" y="113" font-size="9" fill="#B45309" text-anchor="middle" font-family="system-ui,sans-serif">returned</text>
+
+  <!-- Intersection label -->
+  <text x="230" y="99" font-size="10" fill="#78350F" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="700">matched</text>
+  <text x="230" y="113" font-size="9" fill="#92400E" text-anchor="middle" font-family="system-ui,sans-serif">both sides</text>
+
+  <!-- Right label -->
+  <text x="328" y="99" font-size="9" fill="#92400E" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="600">✓ all rows</text>
+  <text x="328" y="113" font-size="9" fill="#B45309" text-anchor="middle" font-family="system-ui,sans-serif">returned</text>
+
+  <!-- Caption -->
+  <line x1="20" y1="168" x2="440" y2="168" stroke="#F1F5F9" stroke-width="1"/>
+  <text x="230" y="181" font-size="9" fill="#94A3B8" text-anchor="middle" font-family="system-ui,sans-serif">Every row from both tables · NULL on whichever side has no match</text>
 </svg>
