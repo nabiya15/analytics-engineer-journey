@@ -56,3 +56,8 @@ WHERE emp_id IN (
     SELECT emp_id 
     FROM performance_reviews
     WHERE follow_up = 'Urgent');
+
+SELECT name, follow_up
+FROM employees AS e
+LEFT JOIN performance_reviews AS pr ON e.emp_id = pr.emp_id
+LIMIT 3;
