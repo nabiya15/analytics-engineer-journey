@@ -185,3 +185,27 @@ SELECT name FROM employees WHERE salary > 80000;
 -- ⚠️ UNION vs JOIN — completely different:
 -- JOIN adds COLUMNS (combines tables side by side)
 -- UNION adds ROWS (stacks results on top of each other)
+
+
+--RECAP
+--QUERY 1:
+--Show me each department's average salary, rounded to the nearest whole number, but only for active employees. Call the column avg_salary. Order by avg_salary descending.
+
+SELECT department, ROUND(AVG(salary),0) as avg_salary
+FROM employees
+where status = 'Active'
+GROUP BY department
+ORDER BY avg_salary DESC;
+
+--QUERY 2:
+--Write a query using a string function that returns each employee's name in uppercase and their department with any leading or trailing spaces removed. Two columns: clean_name and clean_dept.
+SELECT TRIM(UPPER(name)) as clean_name, TRIM(UPPER(department)) as clean_dept
+FROM employees;
+
+--Query 3:
+--Using the employees table, write a query that returns names of employees in Engineering, then EXCEPT removes anyone earning over 90000. Who would be left in the result and why?
+SELECT name FROM employees
+WHERE department = 'Engineering'
+EXCEPT
+SELECT name FROM employees
+WHERE salary > 90000
